@@ -1,5 +1,5 @@
 // Flow.tsx
-import { useState,useCallback } from 'react';
+import { useCallback } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -29,22 +29,16 @@ export default function Flow() {
   // ReactFlow が提供する “便利ステートフック”
   const [nodes, setNodes, onNodesChange]   = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange]   = useEdgesState(initialEdges);
-  const [id, setId] = useState(4);
+
   const onConnect = useCallback(
     (connection: Connection) =>
       setEdges((eds) => addEdge({ ...connection, type: 'step' }, eds)),
     [setEdges],
   );
-  const addNode = useCallback(() => {
-    const newNode = { id: id.toString(), data: { label: `Node ${id}` }, position: { x: Math.random() * 250, y: Math.random() * 250 } };
-    setNodes((els) => [...els, newNode]);
-    setId((id) => id + 1);
-  }, [id]);
 
   return (
     // 親要素に必ず「幅・高さ」を与えること！
-    <div className='w-full h-screen flex'>
-    <div style={{ width: '70%', height: '100%' }}>
+    <div style={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -56,15 +50,7 @@ export default function Flow() {
         <MiniMap />
         <Controls />
         <Background gap={12} size={1} />
-        
       </ReactFlow>
-    </div>
-    <div style={{width: "30%" , height:'100%'}}>
-      <button onClick={addNode} className='bg-blue-500 text-white p-2 rounded'>
-        Add Node
-      </button>
-    </div>
-
     </div>
   );
 }
