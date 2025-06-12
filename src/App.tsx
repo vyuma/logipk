@@ -35,7 +35,6 @@ function App() {
     setActiveInputType(newValue);
   };
 
-export default function App() {
   return (
     <ThemeProvider theme={futuristicTheme}>
       <CssBaseline /> {/* MUIのCSSリセット */}
@@ -101,29 +100,14 @@ export default function App() {
               display: 'flex',
               flexDirection: 'column',
               bgcolor: 'background.default',
-              witdh: '30%',
+              width: '30%',
               height: '100%',
               p: 2,
             }}
           >
             {/* 右側上半分 - 仮説入力コンポーネントとタブ */}
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%' }}>
-              {/* 仮説/反論のタブボタン */}
-              <Tabs
-                value={activeInputType}
-                onChange={handleInputTypeChange}
-                aria-label="input type tabs"
-                variant="scrollable"
-                scrollButtons="auto"
-                sx={{ mb: 2 }}
-              >
-                <StyledTab label="仮説" value="hypothesis" />
-                <StyledTab label="反論 (予想質問)" value="rebuttal" />
-              </Tabs>
-              <Box sx={{ flexGrow: 1 }}>
-                {/* HypothesisInput コンポーネント */}
-                <HypothesisInput activeInputType={activeInputType} />
-              </Box>
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', borderRadius: 3, height: '45%' }}>
+              <HypothesisInput />
             </Box>
 
             {/* 右側下半分 - ToDoサジェストコンポーネント */}
