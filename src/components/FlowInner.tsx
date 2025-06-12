@@ -10,7 +10,6 @@ import {
     type Connection,
     type OnNodesChange,
     type OnEdgesChange,
-    type useOnSelectionChange,
   } from '@xyflow/react';
 import { useMemo, useCallback, useEffect, useRef } from 'react';
 
