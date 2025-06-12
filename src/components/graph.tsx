@@ -51,10 +51,10 @@ const addEdgeType = (initialEdges:Edge[]) => {
 const initialNodes = addNodeType(mockData.nodes);
 const initialEdges = addEdgeType(mockData.edges);
 
-export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges , setSelectedNodes,setSelectedEdges,} :{
+export default function Flow({activeFlowchartType, selectedNodes  ,selectedEdges,setSelectedNodes ,setSelectedEdges, } :{
   activeFlowchartType?: string;
-  selectedNodes: Node[]|null;
-  selectedEdges: Edge[]|null;
+  selectedNodes: Node[] | null;
+  selectedEdges: Edge[] | null;
   setSelectedNodes: (node :Node[]) => void;
   setSelectedEdges: (edge : Edge[]) => void;
  }) {
@@ -65,6 +65,9 @@ export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges 
 
   const [nodes, setNodes, onNodesChangeOriginal] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChangeOriginal] = useEdgesState(initialEdges);
+  // 最初にローカルストレージにデータを保存する。
+  localStorage.setItem('nodes', JSON.stringify(initialNodes));
+  localStorage.setItem('edges', JSON.stringify(initialEdges));
 
   const [history, setHistory] = useState<{ nodes: Node[]; edges: Edge[] }[]>([
     { nodes: initialNodes, edges: initialEdges },
@@ -105,6 +108,7 @@ export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges 
         updateHistory(updatedNodes, edges);
         return updatedNodes;
       });
+      localStorage.setItem('nodes', JSON.stringify(nodes));
     },
     [edges],
   );
@@ -117,6 +121,7 @@ export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges 
         updateHistory(nodes, updatedEdges);
         return updatedEdges;
       });
+      localStorage.setItem('edges', JSON.stringify(edges));
     },
     [nodes],
   );
@@ -149,37 +154,49 @@ export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges 
       allDebateEdges,
       debateEdges[0], // 最初の選択されたエッジを対象にする
     );
-    
-    response[0].nodesToAdd.forEach((node)=>{
-      const newNode: Node = {
-        id: getId(),
-        position: { x: node.position.x, y: node.position.y },
-        data: { label: node.data.label },
-        type: 'textSuggest', 
-      };
-      setNodes((nds) => [...nds, newNode]);
-    })
+    response.forEach((res) => {
+      res.nodesToAdd.forEach((node)=>{
+        const newNode: Node = {
+          id: getId(),
+          position: { x: node.position.x, y: node.position.y },
+          data: { label: node.data.label },
+          type: 'textSuggest', 
+        };
+        setNodes((nds) => [...nds, newNode]);
+      })
 
-    response[0].edgesToAdd.forEach((edge) => {
-      const newEdge: Edge = {
-        id: getId(),
-        source: edge.source,
-        target: edge.target,
-        data: { label: edge.label },
-        type: 'custom-edge',
-      };
-      setEdges((eds) => [...eds, newEdge]);
-    }
-    );
-    
-  
-
-    
-
-
-
-
-
+      res.edgesToAdd.forEach((edge) => {
+        const newEdge: Edge = {
+          id: getId(),
+          source: edge.source,
+          target: edge.target,
+          data: { label: edge.label },
+          type: 'custom-edge',
+        };
+        setEdges((eds) => [...eds, newEdge]);
+      }
+      );
+      // res.edgesToRemove.forEach((edge) => {
+      //   const removeEdge : Edge = {
+      //     id : edge.id,
+      //     source: edge.source,
+      //     target: edge.target,
+      //     data: { label: edge.label },
+      //   };
+      //   setEdges((eds) => eds.filter((e) => e.id !== removeEdge.id));
+      //   }
+      // );
+      res.edgesToUpdate.forEach((edges)=>{
+        const updatedEdge: Edge = {
+          id: edges.id,
+          source: edges.source,
+          target: edges.target,
+          data: { label: edges.label },
+          type: 'custom-edge',
+        };
+        setEdges((eds) => eds.map((e) => (e.id === updatedEdge.id ? updatedEdge : e)));
+      })
+    });
   }
   
 
@@ -194,8 +211,12 @@ export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges 
         onEdgesChange={onEdgesChange}
         getId={getId}
         updateHistory={(nodes, edges) => setHistory((h) => [...h, { nodes, edges }])}
-        setSelectedNodes={setSelectedNodes}
+        selectedEdges={selectedEdges}
         setSelectedEdges={setSelectedEdges}
+        selectedNodes={selectedNodes}
+        setSelectedNodes={setSelectedNodes}
+        selectEnhanceLogic={selectEnhanceLogic}
+
       />
     </ReactFlowProvider>
   );

@@ -14,7 +14,7 @@ import { futuristicTheme } from './theme';
 import { TodoSuggest } from './components/todo_suggest';
 import { CreateRebuttalComponent } from './components/create_rebuttal';
 import { StyledTab } from './components/styled_tab';
-import { FlowChart } from './components/FlowChart';
+import { FlowChart } from './components/flowchart';
 import type { Edge, Node } from '@xyflow/react';
 
 
@@ -29,6 +29,8 @@ function App() {
   const handleFlowchartChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveFlowchartType(newValue);
   };
+
+
 
 
   return (
