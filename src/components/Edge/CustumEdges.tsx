@@ -57,27 +57,28 @@ export default function CustomEdge({
   });
 
   return (
-    <>
-      <BaseEdge id={id} path={edgePath} />
-      <EdgeLabelRenderer>
-        <form>
-          <textarea
-            style={{
-              position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-              pointerEvents: 'all',
-              textAlign: 'center',
-              resize: 'none',
-              overflow: 'hidden',
-            }}
-            className="nodrag nopan bg-white/10"
-            placeholder="Type here..."
-            ref={taRef}
-            onChange={handleChange}
-            value={data?.label}
-          />
-        </form>
-      </EdgeLabelRenderer>
-    </>
+<>
+  <BaseEdge id={id} path={edgePath} />
+  <EdgeLabelRenderer>
+    <form>
+      <textarea
+        style={{
+          position: 'absolute',
+          transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+          pointerEvents: 'all',
+          textAlign: 'center',
+          resize: 'none',
+          overflow: 'hidden',
+        }}
+        className="nodrag nopan bg-gray-900 border border-gray-700 text-gray-100 rounded-md p-1 shadow-md"
+        placeholder="Type here..."
+        ref={taRef}
+        onChange={handleChange}
+        value={data?.label}
+      />
+    </form>
+  </EdgeLabelRenderer>
+</>
+
   );
 }

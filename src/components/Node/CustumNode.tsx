@@ -30,18 +30,19 @@ function TextUpdaterNode({ id, data, onLabelChange }: Props) {
   }, [data.label]);
 
   return (
-    <div className="w-full rounded-lg bg-gray-100 p-2 shadow-md">
-      <Handle type="target" position={Position.Top} />
-      <textarea
-        ref={taRef}
-        className="nodrag mt-1 w-full resize-none overflow-hidden rounded-md border border-gray-300 p-2 text-sm focus:outline-none"
-        placeholder="Type here..."
-        value={data.label}
-        onChange={handleChange}
-      />
-      <Handle type="source" position={Position.Bottom} id="a" />
-      <Handle type="source" position={Position.Bottom} id="b" style={handleStyle} />
-    </div>
+<div className="w-full rounded-lg bg-gray-800 p-2 shadow-md">
+  <Handle type="target" position={Position.Top} />
+  <textarea
+    ref={taRef}
+    className="mt-1 w-full resize-none overflow-hidden rounded-md border border-gray-600 bg-gray-900 text-gray-100 p-2 text-sm focus:outline-none"
+    placeholder="Type here..."
+    value={data.label}
+    onChange={handleChange}
+  />
+  <Handle type="source" position={Position.Bottom} id="a" />
+  <Handle type="source" position={Position.Bottom} id="b" style={handleStyle} />
+</div>
+
   );
 }
 

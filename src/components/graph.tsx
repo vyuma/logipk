@@ -50,7 +50,12 @@ const addEdgeType = (initialEdges:Edge[]) => {
 const initialNodes = addNodeType(mockData.nodes);
 const initialEdges = addEdgeType(mockData.edges);
 
-export default function Flow() {
+export default function Flow( { activeFlowchartType }: { activeFlowchartType?: string }) {
+  if (!activeFlowchartType) {
+    console.warn('activeFlowchartType is not provided, using default mock data');
+  }
+  
+
   const [nodes, setNodes, onNodesChangeOriginal] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChangeOriginal] = useEdgesState(initialEdges);
 

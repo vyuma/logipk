@@ -104,9 +104,9 @@ nodes,
     }, [reactFlow, setNodes, updateHistory, edges, getId]);
   
     return (
-      <div className="w-full h-screen flex">
-        <div style={{ width: '70%', height: '100%' }}>
-          <ReactFlow
+        <div className="w-full h-screen flex dark bg-gray-900">
+        <div style={{ width: '100%', height: '100%' }}>
+            <ReactFlow
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
@@ -115,19 +115,28 @@ nodes,
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             fitView
+            className="bg-gray-900"
             onSelectionChange={(elements) => {
-              const selectedNodes = elements.nodes.filter((n) => n.selected);
-              const selectedEdges = elements.edges.filter((e) => e.selected);
-              console.log('Selected Nodes:', selectedNodes);
-              console.log('Selected Edges:', selectedEdges);
+                const selectedNodes = elements.nodes.filter((n) => n.selected);
+                const selectedEdges = elements.edges.filter((e) => e.selected);
+                console.log('Selected Nodes:', selectedNodes);
+                console.log('Selected Edges:', selectedEdges);
             }}
-          >
-            <MiniMap />
+            >
+            <MiniMap
+                nodeColor={() => "#334155"}
+                maskColor="#1e293b90"
+            />
             <Controls />
-            <Background gap={12} size={1} />
-          </ReactFlow>
+            <Background
+                gap={12}
+                size={1}
+                color="#334155"
+            />
+            </ReactFlow>
         </div>
-      </div>
+        </div>
+
     );
   }
   
