@@ -1,6 +1,6 @@
 import { futuristicTheme } from "../theme";
 import { Box, Typography, Paper, Button } from "@mui/material";
-import type { DebateGraph, EnhanceTODORequest, TODOSuggestions, EnhancementTODO } from "../api/enhaneToDo";
+import type { DebateGraph, EnhanceTODORequest, TODOSuggestions, EnhancementTODO } from "../interface";
 import { AutoDebaterApiClient } from "../api/enhaneToDo";
 import { useState } from 'react'; // useStateをインポート
 

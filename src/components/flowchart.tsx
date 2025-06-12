@@ -12,7 +12,7 @@ interface FlowChartInputProps {
 export const FlowChart: React.FC<FlowChartInputProps>  = ({ activeFlowchartType }) => {
   return (
     <div className=" h-full flex flex-col">
-      <Flow  /> 
+      <Flow  />
     </div>
   );
 };

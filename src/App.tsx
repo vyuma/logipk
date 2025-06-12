@@ -6,34 +6,26 @@ import {
   Box,
   Grid,
   Tabs,
-  Tab,
-  Typography,
 } from '@mui/material';
 
 // 仮説・TODOサジェスト・フローチャートコンポーネントのインポート
 // これらのコンポーネントは外部ファイルで定義されていると想定
 import { futuristicTheme } from './theme';
-import { FlowChart } from './components/flowchart';
 import { TodoSuggest } from './components/todo_suggest';
-import { HypothesisInput } from './components/hypothesis_import';
+import { CreateRebuttalComponent } from './components/create_rebuttal';
 import { StyledTab } from './components/styled_tab';
+import { FlowChart } from './components/FlowChart';
 
 
 function App() {
   // フローチャートの切り替え状態をAppコンポーネントで管理
   const [activeFlowchartType, setActiveFlowchartType] = useState('SQ'); // 'typeA' または 'typeB'
-  // 仮説/反論の切り替え状態をAppコンポーネントで管理
-  const [activeInputType, setActiveInputType] = useState('hypothesis'); // 'hypothesis' または 'rebuttal'
 
   // フローチャートタブの変更ハンドラ
   const handleFlowchartChange = (event, newValue) => {
     setActiveFlowchartType(newValue);
   };
 
-  // 仮説/反論タブの変更ハンドラ
-  const handleInputTypeChange = (event, newValue) => {
-    setActiveInputType(newValue);
-  };
 
   return (
     <ThemeProvider theme={futuristicTheme}>
@@ -107,7 +99,7 @@ function App() {
           >
             {/* 右側上半分 - 仮説入力コンポーネントとタブ */}
             <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', borderRadius: 3, height: '45%' }}>
-              <HypothesisInput />
+              <CreateRebuttalComponent />
             </Box>
 
             {/* 右側下半分 - ToDoサジェストコンポーネント */}
