@@ -49,7 +49,7 @@ export default function FlowInner({
   selectEnhanceLogic
 }: FlowInnerProps) {
   const reactFlow = useReactFlow<Node, Edge>();
-  
+
   // 前回の選択状態を記憶するref
   const lastSelectionRef = useRef<{
     nodeIds: string[];
@@ -97,17 +97,17 @@ export default function FlowInner({
       // 現在の選択状態のIDを取得してソート
       const currentNodeIds = selectedNodes.map((node : Node)=> node.id).sort();
       const currentEdgeIds = selectedEdges.map((edge : Edge) => edge.id).sort();
-      
+
       // 前回の選択状態と比較
       const prevNodeIds = lastSelectionRef.current.nodeIds;
       const prevEdgeIds = lastSelectionRef.current.edgeIds;
-      
+
       // 選択状態に変化があるかチェック
-      const nodeSelectionChanged = 
+      const nodeSelectionChanged =
         currentNodeIds.length !== prevNodeIds.length ||
         currentNodeIds.some((id, index) => id !== prevNodeIds[index]);
-        
-      const edgeSelectionChanged = 
+
+      const edgeSelectionChanged =
         currentEdgeIds.length !== prevEdgeIds.length ||
         currentEdgeIds.some((id, index) => id !== prevEdgeIds[index]);
 
@@ -143,7 +143,7 @@ export default function FlowInner({
     const handleDblClick = (event: MouseEvent) => {
       // 左クリックのみ有効
       if (event.button !== 0) return;
-      
+
       // 画面上での絶対座標をFlow内の座標に変換
       const bounds = pane.getBoundingClientRect();
       const x = event.clientX - bounds.left;
@@ -153,7 +153,7 @@ export default function FlowInner({
         x: (x - viewportX) / zoom,
         y: (y - viewportY) / zoom,
       };
-      
+
       // ノード追加（typoを修正: 'textSugges' → 'textSuggest'）
       const newNode: Node = {
         id: getId(),
@@ -161,7 +161,7 @@ export default function FlowInner({
         position,
         data: { label: 'New Node' },
       };
-      
+
       setNodes((nds) => {
         const next = [...nds, newNode];
         updateHistory(next, edges);

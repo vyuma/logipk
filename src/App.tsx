@@ -69,10 +69,10 @@ function App() {
               bgcolor: 'background.default',
               p: 2,
               width: '70%',
-              height: '95%'
+              height: '100%'
             }}
           >
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%'}}>
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%', bgcolor: 'background.default'}}>
               {/* フローチャートのタブボタン */}
               <Tabs
                 value={activeFlowchartType}
@@ -84,7 +84,7 @@ function App() {
                 <StyledTab label="課題の検証" value="SQ" />
                 <StyledTab label="ソリューションの検証" value="AP" />
               </Tabs>
-              <Box sx={{ flexGrow: 1 }}>
+              <Box sx={{ flexGrow: 1, bgcolor: 'white', height: '90%'}}>
                 {/* FlowChart コンポーネント */}
                 <FlowChart activeFlowchartType={activeFlowchartType}
                 selectedEdges={selectedEdges}
@@ -111,12 +111,18 @@ function App() {
           >
             {/* 右側上半分 - 仮説入力コンポーネントとタブ */}
             <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%' }}>
-              <CreateRebuttalComponent />
+              <CreateRebuttalComponent
+              selectedEdges={selectedEdges}
+              selectedNodes={selectedNodes}
+              />
             </Box>
 
             {/* 右側下半分 - ToDoサジェストコンポーネント */}
             <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%' }}>
-              <TodoSuggest />
+              <TodoSuggest
+              selectedEdges={selectedEdges}
+              selectedNodes={selectedNodes}
+            />
             </Box>
           </Grid>
         </Grid>
