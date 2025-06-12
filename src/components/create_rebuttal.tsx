@@ -108,8 +108,8 @@ export const CreateRebuttalComponent: React.FC = () => {
   };
 
   return (
-    <Box sx={{ overflowY: 'auto', flexGrow: 1, p: 2 }}>
-      <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.primary.main }}>
+    <Box sx={{ overflowY: 'auto', flexGrow: 1, backgroundColor: futuristicTheme.palette.background.paper, maxHeight: '100%' }}>
+      <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.text}}>
         反論生成
       </Typography>
       <Button
