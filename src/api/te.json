@@ -1,0 +1,178 @@
+{
+    "debate_graph": {
+      "nodes": [
+        {
+          "argument": "AIが店舗情報から自動でWebサイトやSNS投稿を生成するSaaSを提供する",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "店舗の基本情報を入力するだけで、デザイン性の高いWebサイトが自動生成される（SEO対策済）",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "セール情報や季節のイベントに応じて、AIが複数のSNS（Instagram, X, Facebook）に最適化された投稿コンテンツ（画像・テキスト）を自動で作成・予約投稿する",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "オンラインでの公式な情報拠点ができる(MEO/SEO強化)",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "SNSでの情報発信が継続的かつ高品質になる",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "オンラインでの認知度が向上し、新規顧客の来店が増加する",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "リピーター増加や客単価向上にも繋がる(売上向上)",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "店舗はSaaSの月額/年額利用料を支払う",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "多くの店舗（特に中小規模）はWebマーケティングに関する専門知識・リソースが不足している",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "Webサイト制作や更新、SNS運用のための時間や人手を確保できない",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "外部の制作会社やコンサルタントに依頼するとコストが高い",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "Webサイトがない、または情報が古い",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "SNSアカウントはあるが、投稿が不定期になったり、魅力的なコンテンツを作成できない",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "オンラインでの情報発信が不十分・魅力的でなく、潜在顧客にリーチできていない",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "近隣の競合店に顧客を奪われ、機会損失が発生している",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "node_f2c5091b-9d9f-4f75-956e-10e1aa569a93",
+          "is_rebuttal": false
+        },
+        {
+          "argument": "node_b63284c1-d082-45d4-8aa3-e37537c10901",
+          "is_rebuttal": false
+        }
+      ],
+      "edges": [
+        {
+          "cause": "AIが店舗情報から自動でWebサイトやSNS投稿を生成するSaaSを提供する",
+          "effect": "店舗の基本情報を入力するだけで、デザイン性の高いWebサイトが自動生成される（SEO対策済）",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "AIが店舗情報から自動でWebサイトやSNS投稿を生成するSaaSを提供する",
+          "effect": "セール情報や季節のイベントに応じて、AIが複数のSNS（Instagram, X, Facebook）に最適化された投稿コンテンツ（画像・テキスト）を自動で作成・予約投稿する",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "店舗の基本情報を入力するだけで、デザイン性の高いWebサイトが自動生成される（SEO対策済）",
+          "effect": "オンラインでの公式な情報拠点ができる(MEO/SEO強化)",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "セール情報や季節のイベントに応じて、AIが複数のSNS（Instagram, X, Facebook）に最適化された投稿コンテンツ（画像・テキスト）を自動で作成・予約投稿する",
+          "effect": "SNSでの情報発信が継続的かつ高品質になる",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "オンラインでの公式な情報拠点ができる(MEO/SEO強化)",
+          "effect": "オンラインでの認知度が向上し、新規顧客の来店が増加する",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "SNSでの情報発信が継続的かつ高品質になる",
+          "effect": "オンラインでの認知度が向上し、新規顧客の来店が増加する",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "オンラインでの認知度が向上し、新規顧客の来店が増加する",
+          "effect": "リピーター増加や客単価向上にも繋がる(売上向上)",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "リピーター増加や客単価向上にも繋がる(売上向上)",
+          "effect": "店舗はSaaSの月額/年額利用料を支払う",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "多くの店舗（特に中小規模）はWebマーケティングに関する専門知識・リソースが不足している",
+          "effect": "Webサイト制作や更新、SNS運用のための時間や人手を確保できない",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "多くの店舗（特に中小規模）はWebマーケティングに関する専門知識・リソースが不足している",
+          "effect": "外部の制作会社やコンサルタントに依頼するとコストが高い",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "Webサイト制作や更新、SNS運用のための時間や人手を確保できない",
+          "effect": "Webサイトがない、または情報が古い",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "Webサイト制作や更新、SNS運用のための時間や人手を確保できない",
+          "effect": "SNSアカウントはあるが、投稿が不定期になったり、魅力的なコンテンツを作成できない",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "外部の制作会社やコンサルタントに依頼するとコストが高い",
+          "effect": "Webサイトがない、または情報が古い",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "外部の制作会社やコンサルタントに依頼するとコストが高い",
+          "effect": "SNSアカウントはあるが、投稿が不定期になったり、魅力的なコンテンツを作成できない",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "Webサイトがない、または情報が古い",
+          "effect": "オンラインでの情報発信が不十分・魅力的でなく、潜在顧客にリーチできていない",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "SNSアカウントはあるが、投稿が不定期になったり、魅力的なコンテンツを作成できない",
+          "effect": "オンラインでの情報発信が不十分・魅力的でなく、潜在顧客にリーチできていない",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "オンラインでの情報発信が不十分・魅力的でなく、潜在顧客にリーチできていない",
+          "effect": "近隣の競合店に顧客を奪われ、機会損失が発生している",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "セール情報や季節のイベントに応じて、AIが複数のSNS（Instagram, X, Facebook）に最適化された投稿コンテンツ（画像・テキスト）を自動で作成・予約投稿する",
+          "effect": "常に最新のトレンドと各SNSプラットフォームの特性に合わせたコンテンツが自動で生成・配信される",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "常に最新のトレンドと各SNSプラットフォームの特性に合わせたコンテンツが自動で生成・配信される",
+          "effect": "SNSでの情報発信が継続的かつ高品質になる",
+          "is_rebuttal": false
+        },
+        {
+          "cause": "セール情報や季節のイベントに応じて、AIが複数のSNS（Instagram, X, Facebook）に最適化された投稿コンテンツ（画像・テキスト）を自動で作成・予約投稿する",
+          "effect": "node_f2c5091b-9d9f-4f75-956e-10e1aa569a93",
+          "is_rebuttal": false
+        }
+      ]
+    },
+    "cause": "セール情報や季節のイベントに応じて、AIが複数のSNS（Instagram, X, Facebook）に最適化された投稿コンテンツ（画像・テキスト）を自動で作成・予約投稿する",
+    "effect": "SNSでの情報発信が継続的かつ高品質になる"
+  }

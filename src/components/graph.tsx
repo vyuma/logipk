@@ -16,7 +16,6 @@ import FlowInner from './FlowInner';
 
 import mockData from './mock.json';
 import { EnhanceLogic } from '../api/enhanceLogic';
-import type { DebateNode , DebateEdge } from '../api/enhanceLogic';
 
 
 // const initialNodes: Node[] = [
@@ -126,78 +125,66 @@ export default function Flow({activeFlowchartType, selectedNodes  ,selectedEdges
     [nodes],
   );
 
-  const selectEnhanceLogic = async (allNodes: Node[], allEdge: Edge[] , selectedEdges:Edge[]) => {
-    
-
-    const allDebateEdges: DebateEdge[] = allEdge.map(edge => ({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      data: { label: edge.data?.label || '' },
-    }));
-
-    const debateEdges: DebateEdge[] = selectedEdges.map(edge => ({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      data: { label: edge.data?.label || '' },
-    }));
-
-    const allDebateNods: DebateNode[] = allNodes.map(node => ({
-      id: node.id,
-      position: node.position,
-      data: { label: String(node.data?.label || '') },
-    }));
-
+  const selectEnhanceLogic = async (
+    allNodes: Node[],
+    allEdge: Edge[],
+    selectedEdges: Edge[],
+  ) => {
+    if (selectedEdges.length === 0) return;
+  
+    /* --- 前処理 ------------------------------------------------ */
     const response = await EnhanceLogic(
-      allDebateNods,
-      allDebateEdges,
-      debateEdges[0], // 最初の選択されたエッジを対象にする
+      allNodes.map(n => ({ id: n.id, position: n.position, data: { label: String(n.data?.label || '') } })),
+      allEdge.map(e => ({ id: e.id, source: e.source, target: e.target, data: { label: e.data?.label || '' } })),
+      {
+        id: selectedEdges[0].id,
+        source: selectedEdges[0].source,
+        target: selectedEdges[0].target,
+        data: { label: selectedEdges[0].data?.label || '' },
+      },
     );
-    response.forEach((res) => {
-      res.nodesToAdd.forEach((node)=>{
-        const newNode: Node = {
+  
+    /* --- ステート更新を 1 回ずつにまとめる --------------------- */
+    response.forEach(res => {
+      /* 1) ノード ---------- */
+      const idMap: Record<string, string> = {};
+      const nodesToAdd: Node[] = res.nodesToAdd.map(n => {
+        const newId = getId();          // 衝突が不安なら新しい ID を発行
+        idMap[n.id] = newId;            // 旧 ID → 新 ID を記録
+        return {
+          id: newId,
+          position: n.position,
+          data: { label: n.data.label },
+          type: 'textSuggest',
+        };
+      });
+  
+      setNodes(prev => [...prev, ...nodesToAdd]);
+  
+      /* 2) エッジ ---------- */
+      setEdges(prev => {
+        // 既存エッジをまず更新／削除
+        let nextEdges = prev
+          .filter(e => !res.edgesToRemove.some(rem => rem.id === e.id))
+          .map(e => {
+            const upd = res.edgesToUpdate.find(u => u.id === e.id);
+            return upd ? { ...e, data: { label: upd.label } } : e;
+          });
+  
+        // 追加エッジを生成（ID マッピングを適用）
+        const edgesToAdd: Edge[] = res.edgesToAdd.map(e => ({
           id: getId(),
-          position: { x: node.position.x, y: node.position.y },
-          data: { label: node.data.label },
-          type: 'textSuggest', 
-        };
-        setNodes((nds) => [...nds, newNode]);
-      })
-
-      res.edgesToAdd.forEach((edge) => {
-        const newEdge: Edge = {
-          id: getId(),
-          source: edge.source,
-          target: edge.target,
-          data: { label: edge.label },
+          source: idMap[e.source] ?? e.source,
+          target: idMap[e.target] ?? e.target,
+          data: { label: e.label },
           type: 'custom-edge',
-        };
-        setEdges((eds) => [...eds, newEdge]);
-      }
-      );
-      // res.edgesToRemove.forEach((edge) => {
-      //   const removeEdge : Edge = {
-      //     id : edge.id,
-      //     source: edge.source,
-      //     target: edge.target,
-      //     data: { label: edge.label },
-      //   };
-      //   setEdges((eds) => eds.filter((e) => e.id !== removeEdge.id));
-      //   }
-      // );
-      res.edgesToUpdate.forEach((edges)=>{
-        const updatedEdge: Edge = {
-          id: edges.id,
-          source: edges.source,
-          target: edges.target,
-          data: { label: edges.label },
-          type: 'custom-edge',
-        };
-        setEdges((eds) => eds.map((e) => (e.id === updatedEdge.id ? updatedEdge : e)));
-      })
+        }));
+  
+        return [...nextEdges, ...edgesToAdd];
+      });
     });
-  }
+  };
+  
   
 
   return (

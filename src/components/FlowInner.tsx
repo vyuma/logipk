@@ -186,6 +186,27 @@ export default function FlowInner({
         }
         
     }
+    const handleKeyPress = useCallback((e: KeyboardEvent) => {
+        // Ctrl+Enter (Win/Linux) または Cmd+Enter (macOS)
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          console.log('Enter ショートカット：全ノードを textUpdater に変更');
+    
+          setNodes(prevNodes => {
+            const updated = prevNodes.map(node => ({
+              ...node,
+              type: 'textUpdater',
+            }));
+            updateHistory(updated, edges);       // 変更後を履歴へ
+            return updated;
+          });
+        }
+      }, [edges, setNodes, updateHistory]);
+    
+      useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+      }, [handleKeyPress]);
+    
 
   return (
     <div className="w-full h-screen flex dark bg-gray-900"

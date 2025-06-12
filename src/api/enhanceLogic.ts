@@ -219,13 +219,16 @@ function createSequentialGraphUpdates(
         target: payload.intermediate_argument,
         type: 'step',
       };
+      console.log("新しいエッジ1:", payload.cause_argument, causeId);
       const newEdge2: DebateEdge = {
         id: `${payload.intermediate_argument}-${payload.effect_argument}`,
         source: payload.intermediate_argument,
         target: effectId!,
         type: 'step',
       };
+      console.log("新しいエッジ2:", payload.effect_argument, effectId);
       update.edgesToAdd.push(newEdge1, newEdge2);
+
 
       // シミュレーション: 新しいエッジをリストに追加
       tempEdges.push(newEdge1, newEdge2);
@@ -274,6 +277,10 @@ export async function EnhanceLogic(
 ): Promise<GraphUpdateAction[]> {
   const apiUrl = 'https://auto-debater.onrender.com/api/enhance-logic';
 
+  console.log("frontendNodes:", frontendNodes);
+  console.log("frontendEdges:", frontendEdges);
+  console.log("targetEdge:", targetEdge);
+
   // --- ステップ1: APIリクエストの準備 ---
   
   const nodeLabelMap = new Map<string, string>();
@@ -311,8 +318,6 @@ export async function EnhanceLogic(
     cause: targetEdge.source,
     effect: targetEdge.target,
   };
-
-  console.log('APIに送信するリクエストボディ:', JSON.stringify(requestBody, null, 2));
 
   try {
     // --- ステップ2: API呼び出し ---
