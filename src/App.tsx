@@ -1,70 +1,11 @@
-// Flow.tsx
-import { useState,useCallback } from 'react';
-import {
-  ReactFlow,
-  MiniMap,
-  Controls,
-  Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  type Node,
-  type Edge,
-  type Connection,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
 
-// 初期ノード & エッジ -------------------------------------------------------
-const initialNodes: Node[] = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
-];
+import React from "react";
+import Flow from "./components/graph";
 
-const initialEdges: Edge[] = [
-  { id: 'e1-2', source: '1', target: '2' },
-];
-
-// コンポーネント ------------------------------------------------------------
-export default function Flow() {
-  // ReactFlow が提供する “便利ステートフック”
-  const [nodes, setNodes, onNodesChange]   = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange]   = useEdgesState(initialEdges);
-  const [id, setId] = useState(4);
-  const onConnect = useCallback(
-    (connection: Connection) =>
-      setEdges((eds) => addEdge({ ...connection, type: 'step' }, eds)),
-    [setEdges],
-  );
-  const addNode = useCallback(() => {
-    const newNode = { id: id.toString(), data: { label: `Node ${id}` }, position: { x: Math.random() * 250, y: Math.random() * 250 } };
-    setNodes((els) => [...els, newNode]);
-    setId((id) => id + 1);
-  }, [id]);
-
+export default function App() {
   return (
-    // 親要素に必ず「幅・高さ」を与えること！
-    <div className='w-full h-screen flex'>
-    <div style={{ width: '70%', height: '100%' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
-      >
-        <MiniMap />
-        <Controls />
-        <Background gap={12} size={1} />
-        
-      </ReactFlow>
-    </div>
-    <div style={{width: "30%" , height:'100%'}}>
-      <button onClick={addNode} className='bg-blue-500 text-white p-2 rounded'>
-        Add Node
-      </button>
-    </div>
-
+    <div className="flex h-screen w-screen items-center justify-center bg-gray-100">
+      <Flow />
     </div>
   );
 }
