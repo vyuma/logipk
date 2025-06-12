@@ -78,7 +78,7 @@ export default function CustomEdge({
               overflow: 'hidden',
             }}
             className="nodrag nopan bg-gray-900 border border-gray-700 text-gray-100 rounded-md p-1 shadow-md"
-            placeholder=""
+            placeholder="Type here..."
             ref={taRef}
             onChange={handleChange}
             value={data?.label}

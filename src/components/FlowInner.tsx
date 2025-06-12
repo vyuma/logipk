@@ -16,6 +16,7 @@ import { useMemo, useCallback, useEffect, useRef} from 'react';
 import TextUpdaterNode from './Node/CustumNode';
 import TextSuggestNode from './Node/CustumNode_suggest';
 import CustomEdge from './Edge/CustumEdges';
+import SuggestEdge from './Edge/CustumEdges_suggst';
 
 interface FlowInnerProps {
   nodes: Node[];
@@ -78,6 +79,7 @@ export default function FlowInner({
 
   const edgeTypes = useMemo(() => ({
     'custom-edge': CustomEdge,
+    'suggest-edge': SuggestEdge,
   }), []);
 
   const onConnect = useCallback(
@@ -199,6 +201,16 @@ export default function FlowInner({
             updateHistory(updated, edges);       // 変更後を履歴へ
             return updated;
           });
+          setEdges(prevEdges => {
+            const updated = prevEdges.map(edge => ({
+                ...edge,
+                type: 'custom-edge', // すべてのエッジを custom-edge に変更
+                animated: false, // アニメーションを無効化
+            }));
+            updateHistory(nodes, updated);       // 変更後を履歴へ
+            return updated;                      // Return the updated array
+          });
+
         }
       }, [edges, setNodes, updateHistory]);
     
@@ -211,7 +223,14 @@ export default function FlowInner({
   return (
     <div className="w-full h-screen flex dark bg-gray-900"
     >
+        
       <div style={{ width: '100%', height: '100%' }}>
+      <button
+        className=" ml-5 mt-5 bg-blue-600 text-white px-4 py-2 rounded shadow-md hover:bg-blue-700 transition-colors "
+        onClick={doubleClickHandler}
+        >
+        AIサジェスト
+        </button>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -236,13 +255,9 @@ export default function FlowInner({
             color="#334155"
           />
         </ReactFlow>
+        
       </div>
-      <button
-        className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-md hover:bg-blue-700 transition-colors"
-        onClick={doubleClickHandler}
-        >
-        AI機能
-        </button>
+      
     </div>
   );
 }

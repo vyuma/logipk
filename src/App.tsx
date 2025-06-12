@@ -124,6 +124,8 @@ function App() {
               <TodoSuggest
               selectedEdges={selectedEdges}
               selectedNodes={selectedNodes}
+              setSelectedEdges={setSelectedEdges}
+              setSelectedNodes={setSelectedNodes}
             />
             </Box>
           </Grid>
