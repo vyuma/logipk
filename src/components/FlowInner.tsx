@@ -205,7 +205,7 @@ export default function FlowInner({
           setEdges(prevEdges => {
             const updated = prevEdges.map(edge => ({
                 ...edge,
-                type: 'suggest-edge', // すべてのエッジを custom-edge に変更
+                type: 'custom-edge', // すべてのエッジを custom-edge に変更
                 animated: false, // アニメーションを無効化
             }));
             updateHistory(nodes, updated);       // 変更後を履歴へ

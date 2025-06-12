@@ -165,7 +165,7 @@ export default function Flow({activeFlowchartType, selectedNodes  ,selectedEdges
           source: idMap[e.source] ?? e.source,
           target: idMap[e.target] ?? e.target,
           data: { label: e.label },
-          type: 'custom-edge',
+          type: 'suggest-edge',
           animated: true,
         }));
   
