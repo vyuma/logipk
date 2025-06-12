@@ -160,7 +160,8 @@ function enrichEnhancementActions(apiActions: ApiEnhancementAction[], initialNod
 
 function createSequentialGraphUpdates(
   enrichedActions: FinalEnhancementAction[],
-  initialEdges: DebateEdge[]
+  initialEdges: DebateEdge[],
+  initialNodes: DebateNode[],
 ): GraphUpdateAction[] {
   const sequentialUpdates: GraphUpdateAction[] = [];
   // 連続するアクションを正しく処理するため、エッジの状態をシミュレートする
@@ -204,16 +205,24 @@ function createSequentialGraphUpdates(
       }
 
       // 3. 新しいエッジ2本を作成し、「追加リスト」へ
+      
+      const nodeLabelMap = new Map<string, string>();
+      initialNodes.forEach(node => {
+        nodeLabelMap.set(node.data.label, node.id);
+      });
+      
+      const causeId = nodeLabelMap.get(payload.cause_argument);
+      const effectId = nodeLabelMap.get(payload.effect_argument);
       const newEdge1: DebateEdge = {
-        id: `e-${payload.cause_argument}-${payload.intermediate_argument}`,
-        source: payload.cause_argument,
+        id: `${payload.cause_argument}-${payload.intermediate_argument}`,
+        source: causeId!,
         target: payload.intermediate_argument,
         type: 'step',
       };
       const newEdge2: DebateEdge = {
-        id: `e-${payload.intermediate_argument}-${payload.effect_argument}`,
+        id: `${payload.intermediate_argument}-${payload.effect_argument}`,
         source: payload.intermediate_argument,
-        target: payload.effect_argument,
+        target: effectId!,
         type: 'step',
       };
       update.edgesToAdd.push(newEdge1, newEdge2);
@@ -266,15 +275,37 @@ export async function EnhanceLogic(
   const apiUrl = 'https://auto-debater.onrender.com/api/enhance-logic';
 
   // --- ステップ1: APIリクエストの準備 ---
-  const backendNodes = frontendNodes.map((n) => ({
-    argument: n.id,            // ← ラベルではなく ID を送る
+  
+  const nodeLabelMap = new Map<string, string>();
+  frontendNodes.forEach(node => {
+    nodeLabelMap.set(node.id, node.data.label);
+  });
+
+  const backendNodes = frontendNodes.map(node => ({
+    argument: node.data.label,
     is_rebuttal: false,
   }));
-  const backendEdges = frontendEdges.map(edge => ({
-    cause: edge.source,
-    effect: edge.target,
-    is_rebuttal: false,
-  }));
+
+  // frontendEdgesをAPIが要求する形式に変換します。
+  const backendEdges = frontendEdges.map(edge => {
+    // マップを使って、source IDとtarget IDに対応する「ラベル」を取得します。
+    const causeLabel = nodeLabelMap.get(edge.source);
+    const effectLabel = nodeLabelMap.get(edge.target);
+
+    // 万が一、IDに対応するノードが見つからない場合はエラーとしてコンソールに出力します。
+    if (!causeLabel || !effectLabel) {
+      console.error(`Edge references a non-existent node. Source: ${edge.source}, Target: ${edge.target}`);
+      // 不正なエッジはnullを返して、後でフィルタリングすることもできます。
+      return null;
+    }
+
+    return {
+      cause: causeLabel,   // IDではなく、ノードのラベルをセット
+      effect: effectLabel, // IDではなく、ノードのラベルをセット
+      is_rebuttal: false,
+    };
+  }).filter(Boolean);
+
   const requestBody = {
     debate_graph: { nodes: backendNodes, edges: backendEdges },
     cause: targetEdge.source,
@@ -306,7 +337,7 @@ export async function EnhanceLogic(
       const enrichedActions = enrichEnhancementActions(apiActions, frontendNodes);
       
       // ステップ4: アクションを順序付きの具体的なグラフ更新指示に変換
-      const sequentialUpdates = createSequentialGraphUpdates(enrichedActions, frontendEdges);
+      const sequentialUpdates = createSequentialGraphUpdates(enrichedActions, frontendEdges, frontendNodes);
       console.log('最終的に解析された順序付きグラフ更新アクション:', sequentialUpdates);
 
       return sequentialUpdates; // 最終的な更新指示リストを返す
