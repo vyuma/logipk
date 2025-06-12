@@ -35,6 +35,7 @@ function App() {
     setActiveInputType(newValue);
   };
 
+export default function App() {
   return (
     <ThemeProvider theme={futuristicTheme}>
       <CssBaseline /> {/* MUIのCSSリセット */}
