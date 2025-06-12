@@ -79,6 +79,13 @@ export interface FinalEnhancementAction {
   insert_node?: EnrichedInsertNodePayload;
 }
 
+export interface GraphUpdateAction {
+  nodesToAdd: DebateNode[];    // このアクションで追加されるノード (0-1個)
+  edgesToRemove: DebateEdge[]; // このアクションで削除されるエッジ (0-1個)
+  edgesToAdd: DebateEdge[];    // このアクションで追加されるエッジ (0-2個)
+  edgesToUpdate: DebateEdge[]; // このアクションで更新されるエッジ (0-1個)
+}
+
 
 // =================================================================
 //  ヘルパー関数 (型注釈付き)
@@ -151,6 +158,98 @@ function enrichEnhancementActions(apiActions: ApiEnhancementAction[], initialNod
 }
 
 
+function createSequentialGraphUpdates(
+  enrichedActions: FinalEnhancementAction[],
+  initialEdges: DebateEdge[]
+): GraphUpdateAction[] {
+  const sequentialUpdates: GraphUpdateAction[] = [];
+  // 連続するアクションを正しく処理するため、エッジの状態をシミュレートする
+  let tempEdges: DebateEdge[] = JSON.parse(JSON.stringify(initialEdges));
+
+  for (const action of enrichedActions) {
+    // 各アクションに対応する、空の更新指示オブジェクトを初期化
+    const update: GraphUpdateAction = {
+      nodesToAdd: [],
+      edgesToRemove: [],
+      edgesToAdd: [],
+      edgesToUpdate: [],
+    };
+
+    // --- ケース1: ノードを挿入するアクション ---
+    if (action.insert_node) {
+      const payload = action.insert_node;
+
+      // 1. 新規ノードを「追加リスト」へ
+      update.nodesToAdd.push({
+        id: payload.intermediate_argument,
+        position: payload.position,
+        data: { label: payload.intermediate_argument },
+        type: 'textUpdater',
+      });
+
+      // 2. シミュレーション中のエッジリストから元エッジを探し、条件付きで「削除リスト」へ
+      const originalEdgeIndex = tempEdges.findIndex(
+        (edge) =>
+          edge.source === payload.cause_argument &&
+          edge.target === payload.effect_argument
+      );
+
+      if (originalEdgeIndex !== -1) {
+        const originalEdge = tempEdges[originalEdgeIndex];
+        if (!originalEdge.label) {
+          update.edgesToRemove.push(originalEdge);
+          // シミュレーション: エッジを削除
+          tempEdges.splice(originalEdgeIndex, 1);
+        }
+      }
+
+      // 3. 新しいエッジ2本を作成し、「追加リスト」へ
+      const newEdge1: DebateEdge = {
+        id: `e-${payload.cause_argument}-${payload.intermediate_argument}`,
+        source: payload.cause_argument,
+        target: payload.intermediate_argument,
+        type: 'step',
+      };
+      const newEdge2: DebateEdge = {
+        id: `e-${payload.intermediate_argument}-${payload.effect_argument}`,
+        source: payload.intermediate_argument,
+        target: payload.effect_argument,
+        type: 'step',
+      };
+      update.edgesToAdd.push(newEdge1, newEdge2);
+
+      // シミュレーション: 新しいエッジをリストに追加
+      tempEdges.push(newEdge1, newEdge2);
+    }
+    // --- ケース2: エッジを強化するアクション ---
+    else if (action.strengthen_edge) {
+      const payload = action.strengthen_edge;
+
+      // シミュレーション中のエッジリストから更新対象のエッジを探す
+      const edgeToUpdate = tempEdges.find(
+        (edge) =>
+          edge.source === payload.cause_argument &&
+          edge.target === payload.effect_argument
+      );
+
+      if (edgeToUpdate) {
+        const enhancementLabel = `[${payload.enhancement_type}] ${payload.content}`;
+        const newLabel = edgeToUpdate.label
+          ? `${edgeToUpdate.label}\n${enhancementLabel}`
+          : enhancementLabel;
+
+        const updatedEdgeData = { ...edgeToUpdate, label: newLabel };
+        update.edgesToUpdate.push(updatedEdgeData);
+
+        // シミュレーション: エッジのラベル情報を更新
+        edgeToUpdate.label = newLabel;
+      }
+    }
+    sequentialUpdates.push(update);
+  }
+  return sequentialUpdates;
+}
+
 // =================================================================
 //  エクスポートされるメイン関数
 // =================================================================
@@ -163,7 +262,7 @@ export async function EnhanceLogic(
   frontendNodes: DebateNode[], 
   frontendEdges: DebateEdge[], 
   targetEdge: DebateEdge
-): Promise<FinalEnhancementAction[]> {
+): Promise<GraphUpdateAction[]> {
   const apiUrl = 'https://auto-debater.onrender.com/api/enhance-logic';
 
   // --- ステップ1: APIリクエストの準備 ---
@@ -198,17 +297,23 @@ export async function EnhanceLogic(
       throw new Error(`APIエラー: ステータス ${response.status} - ${errorText}`);
     }
     
-    // APIのレスポンスを型付けしてパース
     const apiActions = await response.json() as ApiEnhancementAction[];
     console.log('APIからのレスポンス(Raw):', apiActions);
 
-    // --- ステップ3: レスポンスのリッチ化 ---
+    // --- ステップ3 & 4: レスポンスのリッチ化と順序を考慮した解析 ---
     if (apiActions && apiActions.length > 0) {
-      const finalActions = enrichEnhancementActions(apiActions, frontendNodes);
-      return finalActions; // 最終的なアクションリストを返す
+      // ステップ3: レスポンスに位置情報などを追加
+      const enrichedActions = enrichEnhancementActions(apiActions, frontendNodes);
+      
+      // ステップ4: アクションを順序付きの具体的なグラフ更新指示に変換
+      const sequentialUpdates = createSequentialGraphUpdates(enrichedActions, frontendEdges);
+      console.log('最終的に解析された順序付きグラフ更新アクション:', sequentialUpdates);
+
+      return sequentialUpdates; // 最終的な更新指示リストを返す
     }
     
-    return []; // アクションがない場合は空の配列を返す
+    // アクションがない場合は空の配列を返す
+    return [];
 
   } catch (error) {
     console.error('API呼び出しまたは処理中にエラーが発生しました:', error);
