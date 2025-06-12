@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect} from 'react';
 import {
   useNodesState,
   useEdgesState,
@@ -15,7 +15,8 @@ import '@xyflow/react/dist/style.css';
 import FlowInner from './FlowInner';
 
 import mockData from './mock.json';
-
+import { EnhanceLogic } from '../api/enhanceLogic';
+import type { DebateNode , DebateEdge } from '../api/enhanceLogic';
 
 
 // const initialNodes: Node[] = [
@@ -50,11 +51,17 @@ const addEdgeType = (initialEdges:Edge[]) => {
 const initialNodes = addNodeType(mockData.nodes);
 const initialEdges = addEdgeType(mockData.edges);
 
-export default function Flow( { activeFlowchartType }: { activeFlowchartType?: string }) {
+export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges , setSelectedNodes,setSelectedEdges,} :{
+  activeFlowchartType?: string;
+  selectedNodes: Node[]|null;
+  selectedEdges: Edge[]|null;
+  setSelectedNodes: (node :Node[]) => void;
+  setSelectedEdges: (edge : Edge[]) => void;
+ }) {
   if (!activeFlowchartType) {
     console.warn('activeFlowchartType is not provided, using default mock data');
   }
-  
+
 
   const [nodes, setNodes, onNodesChangeOriginal] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChangeOriginal] = useEdgesState(initialEdges);
@@ -114,6 +121,68 @@ export default function Flow( { activeFlowchartType }: { activeFlowchartType?: s
     [nodes],
   );
 
+  const selectEnhanceLogic = async (allNodes: Node[], allEdge: Edge[] , selectedEdges:Edge[]) => {
+    
+
+    const allDebateEdges: DebateEdge[] = allEdge.map(edge => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      data: { label: edge.data?.label || '' },
+    }));
+
+    const debateEdges: DebateEdge[] = selectedEdges.map(edge => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      data: { label: edge.data?.label || '' },
+    }));
+
+    const allDebateNods: DebateNode[] = allNodes.map(node => ({
+      id: node.id,
+      position: node.position,
+      data: { label: String(node.data?.label || '') },
+    }));
+
+    const response = await EnhanceLogic(
+      allDebateNods,
+      allDebateEdges,
+      debateEdges[0], // 最初の選択されたエッジを対象にする
+    );
+    
+    response[0].nodesToAdd.forEach((node)=>{
+      const newNode: Node = {
+        id: getId(),
+        position: { x: node.position.x, y: node.position.y },
+        data: { label: node.data.label },
+        type: 'textSuggest', 
+      };
+      setNodes((nds) => [...nds, newNode]);
+    })
+
+    response[0].edgesToAdd.forEach((edge) => {
+      const newEdge: Edge = {
+        id: getId(),
+        source: edge.source,
+        target: edge.target,
+        data: { label: edge.label },
+        type: 'custom-edge',
+      };
+      setEdges((eds) => [...eds, newEdge]);
+    }
+    );
+    
+  
+
+    
+
+
+
+
+
+  }
+  
+
   return (
     <ReactFlowProvider>
       <FlowInner
@@ -125,6 +194,8 @@ export default function Flow( { activeFlowchartType }: { activeFlowchartType?: s
         onEdgesChange={onEdgesChange}
         getId={getId}
         updateHistory={(nodes, edges) => setHistory((h) => [...h, { nodes, edges }])}
+        setSelectedNodes={setSelectedNodes}
+        setSelectedEdges={setSelectedEdges}
       />
     </ReactFlowProvider>
   );

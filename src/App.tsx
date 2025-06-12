@@ -15,14 +15,18 @@ import { TodoSuggest } from './components/todo_suggest';
 import { CreateRebuttalComponent } from './components/create_rebuttal';
 import { StyledTab } from './components/styled_tab';
 import { FlowChart } from './components/FlowChart';
+import type { Edge, Node } from '@xyflow/react';
 
 
 function App() {
   // フローチャートの切り替え状態をAppコンポーネントで管理
   const [activeFlowchartType, setActiveFlowchartType] = useState('SQ'); // 'typeA' または 'typeB'
 
+  const [selectedNodes, setSelectedNodes] = useState<Node[] | null>(null);
+  const [selectedEdges, setSelectedEdges] = useState<Edge[]|null>(null);
+
   // フローチャートタブの変更ハンドラ
-  const handleFlowchartChange = (event, newValue) => {
+  const handleFlowchartChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveFlowchartType(newValue);
   };
 
@@ -79,7 +83,12 @@ function App() {
               </Tabs>
               <Box sx={{ flexGrow: 1 }}>
                 {/* FlowChart コンポーネント */}
-                <FlowChart activeFlowchartType={activeFlowchartType} />
+                <FlowChart activeFlowchartType={activeFlowchartType} 
+                selectedEdges={selectedEdges}
+                selectedNodes={selectedNodes}
+                setSelectedEdges={setSelectedEdges}
+                setSelectedNodes={setSelectedNodes}
+                />
               </Box>
             </Box>
           </Grid>

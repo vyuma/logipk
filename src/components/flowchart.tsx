@@ -1,18 +1,23 @@
-import React from 'react';
 import Flow from './graph';
+import type { Node } from '@xyflow/react';
+import type { Edge } from '@xyflow/react';
 
 //後ほどReact Flow APIで実装したものとマージ
-interface FlowChartInputProps {
+export interface FlowChartInputProps {
   activeFlowchartType: string;
+  selectedNodes : Node[]|null;
+  setSelectedNodes: (node :Node[]) => void;
+  selectedEdges: Edge[]|null;
+  setSelectedEdges: (edge : Edge[]) => void;
 }
 
 
 // フローチャートコンポーネントのプレースホルダー
 // AppコンポーネントからactiveFlowchartTypeを受け取るように変更
-export const FlowChart: React.FC<FlowChartInputProps>  = ({ activeFlowchartType }) => {
+export const FlowChart  = ({ activeFlowchartType,selectedNodes ,selectedEdges , setSelectedNodes , setSelectedEdges }:FlowChartInputProps) => {
   return (
     <div className=" h-full flex flex-col">
-      <Flow  />
+      <Flow activeFlowchartType={activeFlowchartType} selectedNodes={selectedNodes} selectedEdges={selectedEdges} setSelectedNodes={setSelectedNodes} setSelectedEdges={setSelectedEdges}   />
     </div>
   );
 };
