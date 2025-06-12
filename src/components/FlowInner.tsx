@@ -45,7 +45,6 @@ export default function FlowInner({
   updateHistory,
   selectedEdges,
   setSelectedEdges,
-  selectedNodes,
   setSelectedNodes,
   selectEnhanceLogic
 }: FlowInnerProps) {
