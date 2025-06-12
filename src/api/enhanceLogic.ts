@@ -132,8 +132,8 @@ function enrichEnhancementActions(apiActions: ApiEnhancementAction[], initialNod
     if (action.insert_node) {
       const payload = action.insert_node;
       
-      const causeNode = tempNodes.find(n => n.id === payload.cause_argument);
-      const effectNode = tempNodes.find(n => n.id === payload.effect_argument);
+      const causeNode = tempNodes.find(n => n.data.label === payload.cause_argument);
+      const effectNode = tempNodes.find(n => n.data.label === payload.effect_argument);
 
       if (!causeNode || !effectNode) {
         console.warn("中間ノード挿入の計算スキップ: 原因または結果ノードが見つかりません。", payload);
@@ -167,6 +167,11 @@ function createSequentialGraphUpdates(
   // 連続するアクションを正しく処理するため、エッジの状態をシミュレートする
   let tempEdges: DebateEdge[] = JSON.parse(JSON.stringify(initialEdges));
 
+  const nodeLabelMap = new Map<string, string>();
+  initialNodes.forEach(node => {
+    nodeLabelMap.set(node.data.label, node.id);
+  });
+
   for (const action of enrichedActions) {
     // 各アクションに対応する、空の更新指示オブジェクトを初期化
     const update: GraphUpdateAction = {
@@ -187,6 +192,7 @@ function createSequentialGraphUpdates(
         data: { label: payload.intermediate_argument },
         type: 'textUpdater',
       });
+      nodeLabelMap.set(payload.intermediate_argument, payload.intermediate_argument)
 
       // 2. シミュレーション中のエッジリストから元エッジを探し、条件付きで「削除リスト」へ
       const originalEdgeIndex = tempEdges.findIndex(
@@ -205,17 +211,11 @@ function createSequentialGraphUpdates(
       }
 
       // 3. 新しいエッジ2本を作成し、「追加リスト」へ
-      
-      const nodeLabelMap = new Map<string, string>();
-      initialNodes.forEach(node => {
-        nodeLabelMap.set(node.data.label, node.id);
-      });
-      
-      const causeId = nodeLabelMap.get(payload.cause_argument);
-      const effectId = nodeLabelMap.get(payload.effect_argument);
+      const causeId = nodeLabelMap.get(payload.cause_argument)!;
+      const effectId = nodeLabelMap.get(payload.effect_argument)!;
       const newEdge1: DebateEdge = {
         id: `${payload.cause_argument}-${payload.intermediate_argument}`,
-        source: causeId!,
+        source: causeId,
         target: payload.intermediate_argument,
         type: 'step',
       };
@@ -223,7 +223,7 @@ function createSequentialGraphUpdates(
       const newEdge2: DebateEdge = {
         id: `${payload.intermediate_argument}-${payload.effect_argument}`,
         source: payload.intermediate_argument,
-        target: effectId!,
+        target: effectId,
         type: 'step',
       };
       console.log("新しいエッジ2:", payload.effect_argument, effectId);
@@ -236,12 +236,14 @@ function createSequentialGraphUpdates(
     // --- ケース2: エッジを強化するアクション ---
     else if (action.strengthen_edge) {
       const payload = action.strengthen_edge;
+      const causeId = nodeLabelMap.get(payload.cause_argument)!;
+      const effectId = nodeLabelMap.get(payload.effect_argument)!;
 
       // シミュレーション中のエッジリストから更新対象のエッジを探す
       const edgeToUpdate = tempEdges.find(
         (edge) =>
-          edge.source === payload.cause_argument &&
-          edge.target === payload.effect_argument
+          edge.source === causeId &&
+          edge.target === effectId
       );
 
       if (edgeToUpdate) {
@@ -313,10 +315,13 @@ export async function EnhanceLogic(
     };
   }).filter(Boolean);
 
+
+  console.log(backendNodes);
+  console.log(backendEdges);
   const requestBody = {
     debate_graph: { nodes: backendNodes, edges: backendEdges },
-    cause: targetEdge.source,
-    effect: targetEdge.target,
+    cause: nodeLabelMap.get(targetEdge.source),
+    effect: nodeLabelMap.get(targetEdge.target),
   };
 
   try {
