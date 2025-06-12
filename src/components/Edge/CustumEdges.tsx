@@ -14,7 +14,7 @@ export default function CustomEdge({
   targetX,
   targetY,
   data,
-}: EdgeProps & { data?: { label?: string } }) {
+}: EdgeProps & { data?: { label: string } }) {
   const { setEdges } = useReactFlow();
   const taRef = useRef<HTMLTextAreaElement>(null);
 
@@ -72,7 +72,6 @@ export default function CustomEdge({
             }}
             className="nodrag nopan bg-white/10"
             placeholder="Type here..."
-            rows={1}
             ref={taRef}
             onChange={handleChange}
             value={data?.label}

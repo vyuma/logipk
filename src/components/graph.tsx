@@ -41,7 +41,7 @@ const addNodeType = (initialNodes:Node[]) => {
 const addEdgeType = (initialEdges:Edge[]) => {
   return initialEdges.map(edge => {
     if (!edge.type) {
-      return { ...edge, type: 'custom-edge' }; // デフォルトのエッジタイプを設定
+      return { ...edge, data:{label:edge.label} ,type: 'custom-edge' }; // デフォルトのエッジタイプを設定
     }
     return edge;
   });
