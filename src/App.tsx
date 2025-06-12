@@ -68,10 +68,11 @@ function App() {
               flexDirection: 'column',
               bgcolor: 'background.default',
               p: 2,
-              width: '70%'
+              width: '70%',
+              height: '90%'
             }}
           >
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%'}}>
               {/* フローチャートのタブボタン */}
               <Tabs
                 value={activeFlowchartType}
@@ -83,9 +84,9 @@ function App() {
                 <StyledTab label="課題の検証" value="SQ" />
                 <StyledTab label="ソリューションの検証" value="AP" />
               </Tabs>
-              <Box sx={{ flexGrow: 1 }}>
+              <Box sx={{ flexGrow: 1, height: '60%'}}>
                 {/* FlowChart コンポーネント */}
-                <FlowChart activeFlowchartType={activeFlowchartType} 
+                <FlowChart activeFlowchartType={activeFlowchartType}
                 selectedEdges={selectedEdges}
                 selectedNodes={selectedNodes}
                 setSelectedEdges={setSelectedEdges}
@@ -109,8 +110,8 @@ function App() {
             }}
           >
             {/* 右側上半分 - 仮説入力コンポーネントとタブ */}
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', borderRadius: 3, height: '45%' }}>
-              <CreateRebuttalComponent 
+            <Box sx={{ flexGrow: 1, p: 2, borderRadius: 3, height: '45%', bgcolor: 'background.paper' }}>
+              <CreateRebuttalComponent
                 selectedNodes={selectedNodes}
                 setSelectedNodes={setSelectedNodes}
                 selectedEdges={selectedEdges}
@@ -120,7 +121,7 @@ function App() {
 
             {/* 右側下半分 - ToDoサジェストコンポーネント */}
             <Box sx={{ flexGrow: 1, p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%'}}>
-              <TodoSuggest 
+              <TodoSuggest
                 selectedNodes={selectedNodes}
                 setSelectedNodes={setSelectedNodes}
                 selectedEdges={selectedEdges}

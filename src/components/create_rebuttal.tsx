@@ -116,7 +116,7 @@ export const CreateRebuttalComponent = ({ selectedNodes, selectedEdges }: Rebutt
     // overflowY: 'auto',
     flexGrow: 1,
     backgroundColor: futuristicTheme.palette.background.paper,
-    maxHeight: '100%',
+    height: '100%',
     gap: 4,
     }}>
       <Box
@@ -154,7 +154,7 @@ export const CreateRebuttalComponent = ({ selectedNodes, selectedEdges }: Rebutt
       overflowY: 'auto',
       flexGrow: 1,
       backgroundColor: futuristicTheme.palette.background.paper,
-      maxHeight: '80%',
+      height: '80%',
       pt: 2
       }}>
       {rebuttalResults.length > 0 && (
