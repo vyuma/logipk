@@ -275,7 +275,7 @@ export async function EnhanceLogic(
   frontendEdges: DebateEdge[], 
   targetEdge: DebateEdge
 ): Promise<GraphUpdateAction[]> {
-  const apiUrl = 'https://auto-debater.onrender.com/api/enhance-logic';
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   console.log("frontendNodes:", frontendNodes);
   console.log("frontendEdges:", frontendEdges);
