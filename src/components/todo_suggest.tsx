@@ -2,7 +2,7 @@ import { futuristicTheme } from "../theme";
 import { Box, Typography, Paper, Button } from "@mui/material";
 import type { DebateGraph, EnhanceTODORequest, TODOSuggestions, EnhancementTODO } from "../interface";
 import { AutoDebaterApiClient } from "../api/enhaneToDo";
-import { useState } from 'react'; // useStateをインポート
+import { useState } from 'react';
 import type { Edge, Node } from '@xyflow/react';
 
 export interface SuggestInputProps {
@@ -64,8 +64,8 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
 
     const subgraphNodes = selectedNodes ? selectedNodes.map(node => ({ argument: node.data.label, is_rebuttal: false })) : [];
     const subgraphEdges = selectedEdges ? selectedEdges.map(edge => ({
-      cause: edge.source, // エッジの source を cause にマッピング
-      effect: edge.target, // エッジの target を effect にマッピング
+      cause: edge.source,
+      effect: edge.target,
       is_rebuttal: false
     })) : [];
     const dynamicSubgraph: DebateGraph = {
@@ -83,23 +83,19 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
 
       if (result.todo && Array.isArray(result.todo)) {
         const mappedSuggestions = result.todo.map((item: EnhancementTODO) => {
-          // TODOのタイトルと内容を抽出
-          const title = item.title || 'タイトルなし'; // Titleフィールドを使用
+          const title = item.title || 'タイトルなし';
           let content = '';
 
           if ('strengthen_edge' in item && item.strengthen_edge) {
-            // エッジ強化の場合、strengthen_edge.contentのみを content に設定
             content = item.strengthen_edge.content;
           } else if ('strengthen_node' in item && item.strengthen_node) {
-            // ノード強化の場合、strengthen_node.contentのみを content に設定
             content = item.strengthen_node.content;
           } else if ('insert_node' in item && item.insert_node) {
-            // ノード挿入の場合、元のフォーマットを維持
             content = `「${item.insert_node.cause_argument}」と「${item.insert_node.effect_argument}」の間に「${item.insert_node.intermediate_argument}」を挿入`;
           } else {
-            content = '不明なTODOアクション'; // 予期しないケースのためのフォールバック
+            content = '不明なTODOアクション';
           }
-          return { title, content, isOpen: false }; // 最初は閉じている状態
+          return { title, content, isOpen: false };
         });
         console.log("結果を取得しました", result.todo)
         setTodoSuggestions(mappedSuggestions);
@@ -158,32 +154,45 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
             }}>
       {todoSuggestions.map((suggestion, index) => (
         <Paper
-          key={index} // 各Paperにユニークなkeyを設定
+          key={index}
           elevation={2}
           sx={{
             p: 2,
-            mb: 2, // 各Paperの下に余白
+            mb: 2,
             backgroundColor: 'white',
             borderRadius: '8px',
             boxShadow: 'none',
             outline: 'none',
             '&:hover': {
               opacity: 0.8,
-              backgroundColor: 'white'
-            }
+              backgroundColor: futuristicTheme.palette.primary.light
+            },
+            // ここから追加・変更
+            opacity: 0, // 最初は非表示
+            transform: 'translateY(20px)', // 下から20pxの位置に設定
+            animation: `slideIn 0.5s forwards ease-out ${index * 0.5}s`, // アニメーションを適用
+            '@keyframes slideIn': {
+                'from': {
+                    opacity: 0,
+                    transform: 'translateY(20px)',
+                },
+                'to': {
+                    opacity: 1,
+                    transform: 'translateY(0)',
+                },
+            },
+            // ここまで追加・変更
           }}
         >
-          {/* タイトルを表示し、クリックでトグル */}
           <Typography
             variant="body1"
             color='black'
             onClick={() => handleToggle(index)}
-            sx={{ cursor: 'pointer', fontWeight: 'bold' }} // クリック可能であることを示すスタイル
+            sx={{ cursor: 'pointer', fontWeight: 'bold' }}
           >
             {suggestion.title}
           </Typography>
 
-          {/* isOpenがtrueの場合のみ内容を表示 */}
           {suggestion.isOpen && (
             <Typography variant="body2" color='black' sx={{ mt: 1 }}>
               {suggestion.content}

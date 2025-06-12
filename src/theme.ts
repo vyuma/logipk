@@ -8,6 +8,8 @@ export const futuristicTheme = createTheme({
     mode: 'dark', // ダークモードを基調とする
     primary: {
       main: '#00A786', // 明るいグリーン (アクセントカラー)
+      light: '#88E0CC', // メインカラーより明るい緑 (もしあれば)
+      dark: '#007A60',//メインカラーより暗い緑
     },
     secondary: {
       main: '#2563eb', // 青 (サブアクセント)
