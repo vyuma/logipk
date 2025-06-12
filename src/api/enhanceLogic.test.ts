@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { EnhanceLogic, type DebateNode, type DebateEdge } from './enhanceLogic';
+import { EnhanceLogic, type DebateNode, type DebateEdge, type GraphUpdateAction } from './enhanceLogic';
 
 // 注: このテストは外部APIへ実際にネットワークリクエストを送信します。
 // 実行にはインターネット接続が必要であり、APIサーバーの稼働状況に依存します。
@@ -24,7 +24,7 @@ describe('EnhanceLogic (Integration Test)', () => {
     // --- 2. 関数を実行 ---
     console.log('EnhanceLogic関数を呼び出し、外部APIにリクエストを送信します...');
     
-    let finalActions: any[] = [];
+    let finalActions: GraphUpdateAction[];
     try {
       finalActions = await EnhanceLogic(initialNodes, initialEdges, targetEdgeToEnhance);
     } catch (error) {
@@ -38,21 +38,5 @@ describe('EnhanceLogic (Integration Test)', () => {
     console.log("\n\n✅ EnhanceLogicの実行が完了しました。");
     console.log("--- フロントエンドで順次実行すべき、最終的なアクションリスト ---");
     console.log(JSON.stringify(finalActions, null, 2));
-
-    // アサーションは不要とのことですが、テストとして成立させるための最小限のチェックを行います。
-    expect(finalActions).toBeDefined();
-    expect(Array.isArray(finalActions)).toBe(true); 
-
-    if (finalActions.length > 0) {
-      console.log(`\n✅ ${finalActions.length}件の強化案がAPIから返されました。`);
-      const insertAction = finalActions.find(a => a.insert_node);
-      if (insertAction?.insert_node?.position) {
-         console.log("✅ ノード挿入アクションにpositionが正しく追加されています。");
-         expect(insertAction.insert_node.position).toHaveProperty('x');
-         expect(insertAction.insert_node.position).toHaveProperty('y');
-      }
-    } else {
-      console.log("\n✅ APIは正常に応答しましたが、提案された強化案はありませんでした。");
-    }
   }, 300000);
 });
