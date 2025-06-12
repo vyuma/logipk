@@ -17,6 +17,7 @@ import FlowInner from './FlowInner';
 import mockData from './mock.json';
 import { EnhanceLogic } from '../api/enhanceLogic';
 import type { DebateNode , DebateEdge } from '../api/enhanceLogic';
+import { select } from 'd3-selection';
 
 
 // const initialNodes: Node[] = [
@@ -51,10 +52,10 @@ const addEdgeType = (initialEdges:Edge[]) => {
 const initialNodes = addNodeType(mockData.nodes);
 const initialEdges = addEdgeType(mockData.edges);
 
-export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges , setSelectedNodes,setSelectedEdges,} :{
+export default function Flow({activeFlowchartType , selectedNodes ,selectedEdges, setSelectedNodes,setSelectedEdges,} :{
   activeFlowchartType?: string;
-  selectedNodes: Node[]|null;
-  selectedEdges: Edge[]|null;
+  selectedNodes: Node[] | null;
+  selectedEdges: Edge[] | null;
   setSelectedNodes: (node :Node[]) => void;
   setSelectedEdges: (edge : Edge[]) => void;
  }) {
@@ -149,37 +150,49 @@ export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges 
       allDebateEdges,
       debateEdges[0], // 最初の選択されたエッジを対象にする
     );
-    
-    response[0].nodesToAdd.forEach((node)=>{
-      const newNode: Node = {
-        id: getId(),
-        position: { x: node.position.x, y: node.position.y },
-        data: { label: node.data.label },
-        type: 'textSuggest', 
-      };
-      setNodes((nds) => [...nds, newNode]);
-    })
+    response.forEach((res) => {
+      res.nodesToAdd.forEach((node)=>{
+        const newNode: Node = {
+          id: getId(),
+          position: { x: node.position.x, y: node.position.y },
+          data: { label: node.data.label },
+          type: 'textSuggest', 
+        };
+        setNodes((nds) => [...nds, newNode]);
+      })
 
-    response[0].edgesToAdd.forEach((edge) => {
-      const newEdge: Edge = {
-        id: getId(),
-        source: edge.source,
-        target: edge.target,
-        data: { label: edge.label },
-        type: 'custom-edge',
-      };
-      setEdges((eds) => [...eds, newEdge]);
-    }
-    );
-    
-  
-
-    
-
-
-
-
-
+      res.edgesToAdd.forEach((edge) => {
+        const newEdge: Edge = {
+          id: getId(),
+          source: edge.source,
+          target: edge.target,
+          data: { label: edge.label },
+          type: 'custom-edge',
+        };
+        setEdges((eds) => [...eds, newEdge]);
+      }
+      );
+      // res.edgesToRemove.forEach((edge) => {
+      //   const removeEdge : Edge = {
+      //     id : edge.id,
+      //     source: edge.source,
+      //     target: edge.target,
+      //     data: { label: edge.label },
+      //   };
+      //   setEdges((eds) => eds.filter((e) => e.id !== removeEdge.id));
+      //   }
+      // );
+      res.edgesToUpdate.forEach((edges)=>{
+        const updatedEdge: Edge = {
+          id: edges.id,
+          source: edges.source,
+          target: edges.target,
+          data: { label: edges.label },
+          type: 'custom-edge',
+        };
+        setEdges((eds) => eds.map((e) => (e.id === updatedEdge.id ? updatedEdge : e)));
+      })
+    });
   }
   
 
@@ -194,8 +207,10 @@ export default function Flow({activeFlowchartType ,selectedNodes ,selectedEdges 
         onEdgesChange={onEdgesChange}
         getId={getId}
         updateHistory={(nodes, edges) => setHistory((h) => [...h, { nodes, edges }])}
+        selectedEdges={selectedEdges}
         setSelectedNodes={setSelectedNodes}
         setSelectedEdges={setSelectedEdges}
+        selectEnhanceLogic={selectEnhanceLogic}
       />
     </ReactFlowProvider>
   );

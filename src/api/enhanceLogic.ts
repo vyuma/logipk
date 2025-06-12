@@ -266,8 +266,8 @@ export async function EnhanceLogic(
   const apiUrl = 'https://auto-debater.onrender.com/api/enhance-logic';
 
   // --- ステップ1: APIリクエストの準備 ---
-  const backendNodes = frontendNodes.map(node => ({
-    argument: node.data.label,
+  const backendNodes = frontendNodes.map((n) => ({
+    argument: n.id,            // ← ラベルではなく ID を送る
     is_rebuttal: false,
   }));
   const backendEdges = frontendEdges.map(edge => ({

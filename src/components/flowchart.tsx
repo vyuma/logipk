@@ -14,10 +14,10 @@ export interface FlowChartInputProps {
 
 // フローチャートコンポーネントのプレースホルダー
 // AppコンポーネントからactiveFlowchartTypeを受け取るように変更
-export const FlowChart  = ({ activeFlowchartType,selectedNodes ,selectedEdges , setSelectedNodes , setSelectedEdges }:FlowChartInputProps) => {
+export const FlowChart  = ({ activeFlowchartType ,selectedNodes,selectedEdges, setSelectedNodes , setSelectedEdges }:FlowChartInputProps) => {
   return (
     <div className=" h-full flex flex-col">
-      <Flow activeFlowchartType={activeFlowchartType} selectedNodes={selectedNodes} selectedEdges={selectedEdges} setSelectedNodes={setSelectedNodes} setSelectedEdges={setSelectedEdges}   />
+      <Flow activeFlowchartType={activeFlowchartType} setSelectedNodes={setSelectedNodes} setSelectedEdges={setSelectedEdges} selectedNodes={selectedNodes} selectedEdges={selectedEdges}   />
     </div>
   );
 };

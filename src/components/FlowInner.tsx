@@ -26,8 +26,10 @@ interface FlowInnerProps {
   onEdgesChange: OnEdgesChange;
   getId: () => string;
   updateHistory: (nodes: Node[], edges: Edge[]) => void;
+  selectedEdges: Edge[] | null;
   setSelectedEdges: (edges: Edge[]) => void;
   setSelectedNodes: (nodes: Node[]) => void;
+  selectEnhanceLogic?: (nodes: Node[], edges: Edge[], selectedEdges:Edge[]) => void;
 }
 
 export default function FlowInner({
@@ -39,8 +41,10 @@ export default function FlowInner({
   onEdgesChange,
   getId,
   updateHistory,
+  selectedEdges,
   setSelectedEdges,
   setSelectedNodes,
+  selectEnhanceLogic
 }: FlowInnerProps) {
   const reactFlow = useReactFlow<Node, Edge>();
   
@@ -78,6 +82,9 @@ export default function FlowInner({
     (connection: Connection) => setEdges((eds) => addEdge({ ...connection, type: 'custom-edge' }, eds)),
     [setEdges],
   );
+
+
+  
 
   // 無限ループを防ぐ選択変更ハンドラ
   const onSelectionChange = useCallback(
@@ -166,6 +173,20 @@ export default function FlowInner({
     };
   }, [reactFlow, setNodes, updateHistory, edges, getId]);
 
+
+//   AI機能
+    const doubleClickHandler = () => {
+        if (selectedEdges && selectedEdges.length > 0) {
+            console.log('Selected edges:', selectedEdges);
+            selectEnhanceLogic?.(nodes, edges, selectedEdges);
+        }else{
+            return 
+        }
+        
+    }
+        
+
+
   return (
     <div className="w-full h-screen flex dark bg-gray-900">
       <div style={{ width: '100%', height: '100%' }}>
@@ -180,8 +201,6 @@ export default function FlowInner({
           onSelectionChange={onSelectionChange}
           fitView
           className="bg-gray-900"
-          multiSelectionKeyCode="Shift"
-          deleteKeyCode="Delete"
           selectNodesOnDrag={false}
         >
           <MiniMap
@@ -196,6 +215,12 @@ export default function FlowInner({
           />
         </ReactFlow>
       </div>
+      <button
+        className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-md hover:bg-blue-700 transition-colors"
+        onClick={doubleClickHandler}
+        >
+        AI機能
+        </button>
     </div>
   );
 }
