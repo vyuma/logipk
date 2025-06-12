@@ -11,142 +11,191 @@ import {
     type OnNodesChange,
     type OnEdgesChange,
   } from '@xyflow/react';
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect, useRef } from 'react';
 
 import TextUpdaterNode from './Node/CustumNode';
 import TextSuggestNode from './Node/CustumNode_suggest';
 import CustomEdge from './Edge/CustumEdges';
 
+interface FlowInnerProps {
+  nodes: Node[];
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  edges: Edge[];
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+  onNodesChange: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
+  getId: () => string;
+  updateHistory: (nodes: Node[], edges: Edge[]) => void;
+  setSelectedEdges: (edges: Edge[]) => void;
+  setSelectedNodes: (nodes: Node[]) => void;
+}
+
 export default function FlowInner({
-nodes,
-    setNodes,
-    edges,
-    setEdges,
-    onNodesChange,
-    onEdgesChange,
-    getId,
-    updateHistory,
-    setSelectedEdges,
-    setSelectedNodes,
-  }: {
-    nodes: Node[];
-    setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
-    edges: Edge[];
-    setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
-    onNodesChange: OnNodesChange;
-    onEdgesChange: OnEdgesChange;
-    getId: () => string;
-    updateHistory: (nodes: Node[], edges: Edge[]) => void;
-    setSelectedEdges: (edges: Edge[]) => void;
-    setSelectedNodes: (nodes: Node[]) => void;
-  }) {
-    const reactFlow = useReactFlow<Node, Edge>();
-    
+  nodes,
+  setNodes,
+  edges,
+  setEdges,
+  onNodesChange,
+  onEdgesChange,
+  getId,
+  updateHistory,
+  setSelectedEdges,
+  setSelectedNodes,
+}: FlowInnerProps) {
+  const reactFlow = useReactFlow<Node, Edge>();
   
-    
-    const onLabelChange = useCallback((id: string, value: string) => {
-        setNodes((nds) =>
-          nds.map((node) =>
-            node.id === id ? { ...node, data: { ...node.data, label: value } } : node
-          )
-        );
+  // 前回の選択状態を記憶するref
+  const lastSelectionRef = useRef<{
+    nodeIds: string[];
+    edgeIds: string[];
+  }>({
+    nodeIds: [],
+    edgeIds: [],
+  });
 
-    }, [setNodes]);
-
-    const nodeTypes = useMemo(() => ({
-        textUpdater: (props: { id: string; data: { label: string }; }) => (
-          <TextUpdaterNode {...props} onLabelChange={onLabelChange} />
-        ),
-        textSuggest: (props: { id: string; data: { label: string }; }) => (
-            <TextSuggestNode {...props} onLabelChange={onLabelChange} />
-        ),
-      }), [onLabelChange]);
-  
-    const edgeTypes = useMemo(() => ({
-      'custom-edge': CustomEdge,
-    }), []);
-  
-    const onConnect = useCallback(
-      (connection: Connection) => setEdges((eds) => addEdge({ ...connection, type: 'custom-edge' }, eds)),
-      [setEdges],
+  const onLabelChange = useCallback((id: string, value: string) => {
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id ? { ...node, data: { ...node.data, label: value } } : node
+      )
     );
-  
-    // --- ダブルクリックによるノード追加 ---
-    useEffect(() => {
-      // ReactFlow初回マウント後にPane取得
-      const pane = document.querySelector('.react-flow__pane');
-      if (!pane) return;
-  
-      const handleDblClick = (event: MouseEvent) => {
-        // 右クリック無効化
-        if (event.button !== 0) return;
-        // 画面上での絶対座標をFlow内の座標に変換
-        const bounds = pane.getBoundingClientRect();
-        const x = event.clientX - bounds.left;
-        const y = event.clientY - bounds.top;
-        const { x: viewportX, y: viewportY, zoom } = reactFlow.getViewport();
-        const position = {
-          x: (x - viewportX) / zoom,
-          y: (y - viewportY) / zoom,
-        };
-        // ノード追加
-        const newNode: Node = {
-          id: getId(),
-          type: 'textSugges', // デフォルトのノードタイプ
-          position,
-          data: { label: 'New Node' },
-        };
-        setNodes((nds) => {
-          const next = [...nds, newNode];
-          updateHistory(next, edges);
-          return next;
-        });
+  }, [setNodes]);
+
+  const nodeTypes = useMemo(() => ({
+    textUpdater: (props: { id: string; data: { label: string }; selected?: boolean }) => (
+      <TextUpdaterNode {...props} onLabelChange={onLabelChange} />
+    ),
+    textSuggest: (props: { id: string; data: { label: string }; selected?: boolean }) => (
+      <TextSuggestNode {...props} onLabelChange={onLabelChange} />
+    ),
+  }), [onLabelChange]);
+
+  const edgeTypes = useMemo(() => ({
+    'custom-edge': CustomEdge,
+  }), []);
+
+  const onConnect = useCallback(
+    (connection: Connection) => setEdges((eds) => addEdge({ ...connection, type: 'custom-edge' }, eds)),
+    [setEdges],
+  );
+
+  // 無限ループを防ぐ選択変更ハンドラ
+  const onSelectionChange = useCallback(
+    ({ nodes: selectedNodes, edges: selectedEdges }:{
+        nodes: Node[];
+        edges: Edge[];
+    }) => {
+      // 現在の選択状態のIDを取得してソート
+      const currentNodeIds = selectedNodes.map((node : Node)=> node.id).sort();
+      const currentEdgeIds = selectedEdges.map((edge : Edge) => edge.id).sort();
+      
+      // 前回の選択状態と比較
+      const prevNodeIds = lastSelectionRef.current.nodeIds;
+      const prevEdgeIds = lastSelectionRef.current.edgeIds;
+      
+      // 選択状態に変化があるかチェック
+      const nodeSelectionChanged = 
+        currentNodeIds.length !== prevNodeIds.length ||
+        currentNodeIds.some((id, index) => id !== prevNodeIds[index]);
+        
+      const edgeSelectionChanged = 
+        currentEdgeIds.length !== prevEdgeIds.length ||
+        currentEdgeIds.some((id, index) => id !== prevEdgeIds[index]);
+
+      // 変化がない場合は何もしない
+      if (!nodeSelectionChanged && !edgeSelectionChanged) {
+        return;
+      }
+
+      // 選択状態を更新
+      lastSelectionRef.current = {
+        nodeIds: currentNodeIds,
+        edgeIds: currentEdgeIds,
       };
-  
-      pane.addEventListener('dblclick', handleDblClick);
-      return () => {
-        pane.removeEventListener('dblclick', handleDblClick);
+
+      // 外部のステート更新（これが安全になった）
+      setSelectedNodes(selectedNodes);
+      setSelectedEdges(selectedEdges);
+
+      // デバッグログ
+      console.log('Selection changed safely:', {
+        selectedNodes: selectedNodes,
+        selectedEdges: selectedEdges,
+      });
+    },
+    [setSelectedNodes, setSelectedEdges]
+  );
+
+  // ダブルクリックによるノード追加
+  useEffect(() => {
+    const pane = document.querySelector('.react-flow__pane');
+    if (!pane) return;
+
+    const handleDblClick = (event: MouseEvent) => {
+      // 左クリックのみ有効
+      if (event.button !== 0) return;
+      
+      // 画面上での絶対座標をFlow内の座標に変換
+      const bounds = pane.getBoundingClientRect();
+      const x = event.clientX - bounds.left;
+      const y = event.clientY - bounds.top;
+      const { x: viewportX, y: viewportY, zoom } = reactFlow.getViewport();
+      const position = {
+        x: (x - viewportX) / zoom,
+        y: (y - viewportY) / zoom,
       };
-    }, [reactFlow, setNodes, updateHistory, edges, getId]);
+      
+      // ノード追加（typoを修正: 'textSugges' → 'textSuggest'）
+      const newNode: Node = {
+        id: getId(),
+        type: 'textSuggest', // typoを修正
+        position,
+        data: { label: 'New Node' },
+      };
+      
+      setNodes((nds) => {
+        const next = [...nds, newNode];
+        updateHistory(next, edges);
+        return next;
+      });
+    };
 
+    pane.addEventListener('dblclick', handleDblClick);
+    return () => {
+      pane.removeEventListener('dblclick', handleDblClick);
+    };
+  }, [reactFlow, setNodes, updateHistory, edges, getId]);
 
-  
-    return (
-        <div className="w-full h-screen flex dark bg-gray-900">
-        <div style={{ width: '100%', height: '100%' }}>
-            <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            fitView
-            className="bg-gray-900"
-            onSelectionChange={(elements) => {
-                const selectedNodes = elements.nodes.filter((n) => n.selected);
-                const selectedEdges = elements.edges.filter((e) => e.selected);
-                console.log('Selected Nodes:', selectedNodes);
-                console.log('Selected Edges:', selectedEdges);
-                setSelectedNodes(selectedNodes);
-                setSelectedEdges(selectedEdges);
-            }}
-            >
-            <MiniMap
-                nodeColor={() => "#334155"}
-                maskColor="#1e293b90"
-            />
-            <Controls />
-            <Background
-                gap={12}
-                size={1}
-                color="#334155"
-            />
-            </ReactFlow>
-        </div>
-        </div>
-
-    );
-  }
-  
+  return (
+    <div className="w-full h-screen flex dark bg-gray-900">
+      <div style={{ width: '100%', height: '100%' }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          onSelectionChange={onSelectionChange}
+          fitView
+          className="bg-gray-900"
+          multiSelectionKeyCode="Shift"
+          deleteKeyCode="Delete"
+          selectNodesOnDrag={false}
+        >
+          <MiniMap
+            nodeColor={() => "#334155"}
+            maskColor="#1e293b90"
+          />
+          <Controls />
+          <Background
+            gap={12}
+            size={1}
+            color="#334155"
+          />
+        </ReactFlow>
+      </div>
+    </div>
+  );
+}
