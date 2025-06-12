@@ -113,9 +113,9 @@ export type EnhancementAction =
  * Exactly one property should be present.
  */
 export type EnhancementTODO =
-  | { strengthen_edge: StrengthenEdgePayload; strengthen_node?: never; insert_node?: never }
-  | { strengthen_node: StrengthenNodePayload; strengthen_edge?: never; insert_node?: never }
-  | { insert_node: InsertNodePayload; strengthen_edge?: never; strengthen_node?: never };
+  | { title: string; strengthen_edge: StrengthenEdgePayload; strengthen_node?: never; insert_node?: never }
+  | { title: string; strengthen_node: StrengthenNodePayload; strengthen_edge?: never; insert_node?: never }
+  | { title: string; insert_node: InsertNodePayload; strengthen_edge?: never; strengthen_node?: never };
 
 /**
  * Represents a collection of TODO suggestions.

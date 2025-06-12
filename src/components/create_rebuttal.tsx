@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
-import { Box, Typography, Paper, Button } from '@mui/material'; // Buttonを追加
-import { futuristicTheme } from '../theme'; // 仮定するテーマのインポート
-import { AutoDebaterApiClient } from '../api/enhaneToDo'; // パスが正しいことを確認してください
-import type { CreateRebuttalRequest, DebateGraph, NodeRebuttal, EdgeRebuttal, CounterArgumentRebuttal, TurnArgumentRebuttal } from '../interface'; // 必要な型をインポート
+import { Box, Typography, Paper, Button } from '@mui/material';
+import { futuristicTheme } from '../theme';
+import { AutoDebaterApiClient } from '../api/enhaneToDo';
+import type { CreateRebuttalRequest, DebateGraph, NodeRebuttal, EdgeRebuttal, CounterArgumentRebuttal, TurnArgumentRebuttal } from '../interface';
+import type { Edge, Node } from '@xyflow/react';
 
+export interface RebuttalInputProps {
+  selectedNodes: Node[] | null;
+  setSelectedNodes: (node :Node[]) => void;
+  selectedEdges: Edge[] | null;
+  setSelectedEdges: (edge : Edge[]) => void;
+}
 const apiClient = new AutoDebaterApiClient();
 
-export const CreateRebuttalComponent: React.FC = () => {
-  const [rebuttalResults, setRebuttalResults] = useState<string[]>([]); // 結果を文字列の配列として保持
+export const CreateRebuttalComponent = ({ selectedNodes, selectedEdges }: RebuttalInputProps) => { // selectedNodes を追加
+  const [rebuttalResults, setRebuttalResults] = useState<string[]>([]);
 
   async function demonstrateCreateRebuttal() {
     const sampleDebateGraph: DebateGraph = {
@@ -37,25 +44,22 @@ export const CreateRebuttalComponent: React.FC = () => {
       ]
     };
 
-    // サブグラフは、議論グラフの一部として定義します。
-    // 今回は例として議論グラフ全体をサブグラフとします。
-    const sampleSubgraph: DebateGraph = {
-      "nodes": [
-        { "argument": "AIが店舗情報から自動でWebサイトやSNS投稿を生成するSaaSを提供する", "is_rebuttal": false },
-        { "argument": "オンラインでの認知度が向上し、新規顧客の来店が増加する", "is_rebuttal": false }
-      ],
-      "edges": [
-        {
-          "cause": "AIが店舗情報から自動でWebサイトやSNS投稿を生成するSaaSを提供する",
-          "effect": "オンラインでの認知度が向上し、新規顧客の来店が増加する",
-          "is_rebuttal": false
-        }
-      ]
+    // selectedNodes と selectedEdges を DebateGraph の形式に変換
+    const subgraphNodes = selectedNodes ? selectedNodes.map(node => ({ argument: node.data.label, is_rebuttal: false })) : [];
+    const subgraphEdges = selectedEdges ? selectedEdges.map(edge => ({
+      cause: edge.source, // エッジの source を cause にマッピング
+      effect: edge.target, // エッジの target を effect にマッピング
+      is_rebuttal: false
+    })) : [];
+
+    const dynamicSubgraph: DebateGraph = {
+      nodes: subgraphNodes,
+      edges: subgraphEdges,
     };
 
     const createRebuttalRequest: CreateRebuttalRequest = {
-      debate_graph: sampleDebateGraph,
-      subgraph: sampleSubgraph,
+      debate_graph: sampleDebateGraph, // 全体のディベートグラフ
+      subgraph: dynamicSubgraph, // 選択されたノードとエッジから生成されたサブグラフ
     };
 
     try {
@@ -67,28 +71,28 @@ export const CreateRebuttalComponent: React.FC = () => {
       // ノードへの反論を処理
       if (result.node_rebuttals && result.node_rebuttals.length > 0) {
         result.node_rebuttals.forEach((rebuttal: NodeRebuttal) => {
-          rebuttals.push(`**ノード反論**: ターゲット「${rebuttal.target_argument}」、タイプ「${rebuttal.rebuttal_type}」、反論「${rebuttal.rebuttal_argument}」`);
+          rebuttals.push(rebuttal.rebuttal_argument); // rebuttal_argument のみを追加
         });
       }
 
       // エッジへの反論を処理
       if (result.edge_rebuttals && result.edge_rebuttals.length > 0) {
         result.edge_rebuttals.forEach((rebuttal: EdgeRebuttal) => {
-          rebuttals.push(`**エッジ反論**: ターゲット「${rebuttal.target_cause_argument}」から「${rebuttal.target_effect_argument}」、タイプ「${rebuttal.rebuttal_type}」、反論「${rebuttal.rebuttal_argument}」`);
+          rebuttals.push(rebuttal.rebuttal_argument); // rebuttal_argument のみを追加
         });
       }
 
       // カウンターアーギュメント反論を処理
       if (result.counter_argument_rebuttals && result.counter_argument_rebuttals.length > 0) {
         result.counter_argument_rebuttals.forEach((rebuttal: CounterArgumentRebuttal) => {
-          rebuttals.push(`**カウンターアーギュメント反論**: ターゲット「${rebuttal.target_argument}」、反論「${rebuttal.rebuttal_argument}」`);
+          rebuttals.push(rebuttal.rebuttal_argument); // rebuttal_argument のみを追加
         });
       }
 
       // ターンアーギュメント反論を処理
       if (result.turn_argument_rebuttals && result.turn_argument_rebuttals.length > 0) {
         result.turn_argument_rebuttals.forEach((rebuttal: TurnArgumentRebuttal) => {
-          rebuttals.push(`**ターンアーギュメント反論**: 反論「${rebuttal.rebuttal_argument}」`);
+          rebuttals.push(rebuttal.rebuttal_argument); // rebuttal_argument のみを追加
         });
       }
 
@@ -108,28 +112,53 @@ export const CreateRebuttalComponent: React.FC = () => {
   };
 
   return (
-    <Box sx={{ overflowY: 'auto', flexGrow: 1, backgroundColor: futuristicTheme.palette.background.paper, maxHeight: '100%' }}>
-      <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.text}}>
-        反論生成
-      </Typography>
-      <Button
-        variant="contained"
-        sx={{
-          mb: 2,
-          backgroundColor: futuristicTheme.palette.secondary.main,
-          '&:hover': {
-            backgroundColor: futuristicTheme.palette.secondary.dark,
-          },
+    <Box sx={{
+    // overflowY: 'auto',
+    flexGrow: 1,
+    backgroundColor: futuristicTheme.palette.background.paper,
+    maxHeight: '100%',
+    gap: 4,
+    }}>
+      <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexGrow: 1,
+        backgroundColor: futuristicTheme.palette.background.paper,
+        maxHeight: '20%',
+        borderBottom: '1px solid',
+        borderColor: futuristicTheme.palette.primary.main
         }}
-        onClick={handleClick}
       >
-        反論を生成する
-      </Button>
+        <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.text, ml: 2}}>
+          仮説精査
+        </Typography>
+        <Button
+          variant="contained"
+          sx={{
+            mr: 2,
+            mb: 2,
+            background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+            '&:hover': {
+              backgroundColor: futuristicTheme.palette.secondary.dark,
+            },
+          }}
+          onClick={handleClick}
+        >
+          仮説を精査する
+        </Button>
+      </Box>
+      <Box sx={{
+      overflowY: 'auto',
+      flexGrow: 1,
+      backgroundColor: futuristicTheme.palette.background.paper,
+      maxHeight: '80%',
+      pt: 2
+      }}>
       {rebuttalResults.length > 0 && (
         <Box>
-          <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.primary.main }}>
-            生成された反論
-          </Typography>
           {rebuttalResults.map((rebuttal, index) => (
             <Paper
               key={index}
@@ -137,19 +166,24 @@ export const CreateRebuttalComponent: React.FC = () => {
               sx={{
                 p: 2,
                 mb: 2,
-                backgroundColor: futuristicTheme.palette.background.paper,
+                backgroundColor: 'white',
                 borderRadius: '8px',
                 boxShadow: 'none',
                 outline: 'none',
+                '&:hover': {
+                  opacity: 0.8,
+                  backgroundColor: 'white',
+                }
               }}
             >
-              <Typography variant="body1" sx={{ color: futuristicTheme.palette.text.primary }}>
+              <Typography variant="body1" color='black'>
                 {rebuttal}
               </Typography>
             </Paper>
           ))}
         </Box>
       )}
+    </Box>
     </Box>
   );
 };
