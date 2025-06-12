@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import './App.css'
-import Flow from './components/example'
 
-function App() {
+import React from "react";
+import Flow from "./components/graph";
 
+export default function App() {
   return (
-    <>
-    <Flow />
-    </>
-  )
+    <div className="flex h-screen w-screen items-center justify-center bg-gray-100">
+      <Flow />
+    </div>
+  );
 }
-
-export default App
