@@ -125,67 +125,65 @@ export default function Flow({activeFlowchartType, selectedNodes  ,selectedEdges
     [nodes],
   );
 
-const selectEnhanceLogic = async (
-  allNodes: Node[],
-  allEdge: Edge[],
-  selectedEdges: Edge[],
-) => {
-  if (selectedEdges.length === 0) return;
-
-  /* --- 前処理 ------------------------------------------------ */
-  const response = await EnhanceLogic(
-    allNodes.map(n => ({ id: n.id, position: n.position, data: { label: String(n.data?.label || '') } })),
-    allEdge.map(e => ({ id: e.id, source: e.source, target: e.target, data: { label: e.data?.label || '' } })),
-    {
-      id: selectedEdges[0].id,
-      source: selectedEdges[0].source,
-      target: selectedEdges[0].target,
-      data: { label: selectedEdges[0].data?.label || '' },
-    },
-  );
-
-  /* --- ステート更新を 1 回ずつにまとめる --------------------- */
-  response.forEach(res => {
-    /* 1) ノード ---------- */
-    const idMap: Record<string, string> = {};
-    const nodesToAdd: Node[] = res.nodesToAdd.map(n => {
-      const newId = getId();          // 衝突が不安なら新しい ID を発行
-      idMap[n.id] = newId;            // 旧 ID → 新 ID を記録
-      return {
-        id: newId,
-        position: n.position,
-        data: { label: n.data.label },
-        type: 'textSuggest',
-      };
+  const selectEnhanceLogic = async (
+    allNodes: Node[],
+    allEdge: Edge[],
+    selectedEdges: Edge[],
+  ) => {
+    if (selectedEdges.length === 0) return;
+  
+    /* --- 前処理 ------------------------------------------------ */
+    const response = await EnhanceLogic(
+      allNodes.map(n => ({ id: n.id, position: n.position, data: { label: String(n.data?.label || '') } })),
+      allEdge.map(e => ({ id: e.id, source: e.source, target: e.target, data: { label: e.data?.label || '' } })),
+      {
+        id: selectedEdges[0].id,
+        source: selectedEdges[0].source,
+        target: selectedEdges[0].target,
+      },
+    );
+  
+    /* --- ステート更新を 1 回ずつにまとめる --------------------- */
+    response.forEach(res => {
+      /* 1) ノード ---------- */
+      const idMap: Record<string, string> = {};
+      const nodesToAdd: Node[] = res.nodesToAdd.map(n => {
+        const newId = getId();          // 衝突が不安なら新しい ID を発行
+        idMap[n.id] = newId;            // 旧 ID → 新 ID を記録
+        return {
+          id: newId,
+          position: n.position,
+          data: { label: n.data.label },
+          type: 'textSuggest',
+        };
+      });
+  
+      setNodes(prev => [...prev, ...nodesToAdd]);
+  
+      /* 2) エッジ ---------- */
+      setEdges(prev => {
+        // 既存エッジをまず更新／削除
+        let nextEdges = prev
+          .filter(e => !res.edgesToRemove.some(rem => rem.id === e.id))
+          .map(e => {
+            const upd = res.edgesToUpdate.find(u => u.id === e.id);
+            return upd ? { ...e, data: { label: upd.label } } : e;
+          });
+  
+        // 追加エッジを生成（ID マッピングを適用）
+        const edgesToAdd: Edge[] = res.edgesToAdd.map(e => ({
+          id: getId(),
+          source: idMap[e.source] ?? e.source,
+          target: idMap[e.target] ?? e.target,
+          data: { label: e.label },
+          type: 'custom-edge',
+        }));
+  
+        return [...nextEdges, ...edgesToAdd];
+      });
     });
-
-    setNodes(prev => [...prev, ...nodesToAdd]);
-
-    /* 2) エッジ ---------- */
-    setEdges(prev => {
-      // 既存エッジをまず更新／削除
-      let nextEdges = prev
-        .filter(e => !res.edgesToRemove.some(rem => rem.id === e.id))
-        .map(e => {
-          const upd = res.edgesToUpdate.find(u => u.id === e.id);
-          return upd ? { ...e, data: { label: upd.label } } : e;
-        });
-
-      // 追加エッジを生成（ID マッピングを適用）
-      const edgesToAdd: Edge[] = res.edgesToAdd.map(e => ({
-        id: getId(),
-        source: idMap[e.source] ?? e.source,
-        target: idMap[e.target] ?? e.target,
-        data: { label: e.label },
-        type: 'SuggestEdge',
-        animated : true 
-      }));
-
-      return [...nextEdges, ...edgesToAdd];
-    });
-  });
-};
-
+  };
+  
   
 
   return (

@@ -62,7 +62,7 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
       ]
     };
 
-    const subgraphNodes = selectedNodes ? selectedNodes.map(node => ({ argument: node.data.label, is_rebuttal: false })) : [];
+    const subgraphNodes = selectedNodes ? selectedNodes.map(node => ({ argument: String(node.data.label), is_rebuttal: false })) : [];
     const subgraphEdges = selectedEdges ? selectedEdges.map(edge => ({
       cause: edge.source,
       effect: edge.target,
@@ -127,7 +127,7 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
         borderColor: futuristicTheme.palette.primary.main
         }}
       >
-      <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.text, ml: 2}} >
+      <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.text.primary, ml: 2}} >
         検証方法
       </Typography>
       <Button

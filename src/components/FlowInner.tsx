@@ -171,9 +171,9 @@ export default function FlowInner({
       });
     };
 
-    pane.addEventListener('dblclick', handleDblClick);
+    pane.addEventListener('dblclick', handleDblClick as EventListener);
     return () => {
-      pane.removeEventListener('dblclick', handleDblClick);
+      pane.removeEventListener('dblclick', handleDblClick as EventListener);
     };
   }, [reactFlow, setNodes, updateHistory, edges, getId]);
 

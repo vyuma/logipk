@@ -68,11 +68,10 @@ function App() {
               flexDirection: 'column',
               bgcolor: 'background.default',
               p: 2,
-              width: '70%',
-              height: '100%'
+              width: '70%'
             }}
           >
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%', bgcolor: 'background.default'}}>
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
               {/* フローチャートのタブボタン */}
               <Tabs
                 value={activeFlowchartType}
@@ -84,9 +83,9 @@ function App() {
                 <StyledTab label="課題の検証" value="SQ" />
                 <StyledTab label="ソリューションの検証" value="AP" />
               </Tabs>
-              <Box sx={{ flexGrow: 1, bgcolor: 'white', height: '90%'}}>
+              <Box sx={{ flexGrow: 1 }}>
                 {/* FlowChart コンポーネント */}
-                <FlowChart activeFlowchartType={activeFlowchartType}
+                <FlowChart activeFlowchartType={activeFlowchartType} 
                 selectedEdges={selectedEdges}
                 selectedNodes={selectedNodes}
                 setSelectedEdges={setSelectedEdges}
@@ -110,23 +109,13 @@ function App() {
             }}
           >
             {/* 右側上半分 - 仮説入力コンポーネントとタブ */}
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%' }}>
-              <CreateRebuttalComponent
-              selectedEdges={selectedEdges}
-              setSelectedEdges={setSelectedEdges}
-              selectedNodes={selectedNodes}
-              setSelectedNodes={setSelectedNodes}
-              />
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', borderRadius: 3, height: '45%' }}>
+              <CreateRebuttalComponent />
             </Box>
 
             {/* 右側下半分 - ToDoサジェストコンポーネント */}
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%' }}>
-              <TodoSuggest
-              selectedEdges={selectedEdges}
-              selectedNodes={selectedNodes}
-              setSelectedEdges={setSelectedEdges}
-              setSelectedNodes={setSelectedNodes}
-            />
+            <Box sx={{ flexGrow: 1, p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%'}}>
+              <TodoSuggest />
             </Box>
           </Grid>
         </Grid>
