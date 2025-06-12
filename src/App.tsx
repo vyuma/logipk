@@ -113,7 +113,9 @@ function App() {
             <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%' }}>
               <CreateRebuttalComponent
               selectedEdges={selectedEdges}
+              setSelectedEdges={setSelectedEdges}
               selectedNodes={selectedNodes}
+              setSelectedNodes={setSelectedNodes}
               />
             </Box>
 

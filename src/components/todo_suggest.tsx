@@ -3,12 +3,19 @@ import { Box, Typography, Paper, Button } from "@mui/material";
 import type { DebateGraph, EnhanceTODORequest, TODOSuggestions, EnhancementTODO } from "../interface";
 import { AutoDebaterApiClient } from "../api/enhaneToDo";
 import { useState } from 'react'; // useStateをインポート
+import type { Edge, Node } from '@xyflow/react';
 
+export interface SuggestInputProps {
+  selectedNodes: Node[] | null;
+  setSelectedNodes: (node :Node[]) => void;
+  selectedEdges: Edge[] | null;
+  setSelectedEdges: (edge : Edge[]) => void;
+}
 // APIクライアントのインスタンスを作成
 const apiClient = new AutoDebaterApiClient();
 
 // ToDoサジェストコンポーネント
-export const TodoSuggest = () => {
+export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps) => {
   // ToDoサジェストとその展開状態を保持するstate
   const [todoSuggestions, setTodoSuggestions] = useState<
     Array<{
@@ -55,35 +62,19 @@ export const TodoSuggest = () => {
       ]
     };
 
-    const sampleSubgraph: DebateGraph = {
-      "nodes": [
-        { "argument": "多くの小規模飲食店は、専門知識や時間不足から効果的なオンライン集客ができていない", "is_rebuttal": false },
-        { "argument": "潜在顧客にリーチできず、機会損失が発生している", "is_rebuttal": false },
-        { "argument": "AIが店舗情報から自動でWebサイトやSNS投稿を生成するSaaSを提供する", "is_rebuttal": false },
-        { "argument": "オーナーは本来の調理・接客業務に集中できる", "is_rebuttal": false },
-        { "argument": "オンラインでの認知度が向上し、新規顧客の来店が増加する", "is_rebuttal": false }
-      ],
-      "edges": [
-        {
-          "cause": "多くの小規模飲食店は、専門知識や時間不足から効果的なオンライン集客ができていない",
-          "effect": "潜在顧客にリーチできず、機会損失が発生している",
-          "is_rebuttal": false
-        },
-        {
-          "cause": "AIが店舗情報から自動でWebサイトやSNSを提供する",
-          "effect": "オーナーは本来の調理・接客業務に集中できる",
-          "is_rebuttal": false
-        },
-        {
-          "cause": "AIが店舗情報から自動でWebサイトやSNS投稿を生成するSaaSを提供する",
-          "effect": "オンラインでの認知度が向上し、新規顧客の来店が増加する",
-          "is_rebuttal": false
-        }
-      ]
-    }
+    const subgraphNodes = selectedNodes ? selectedNodes.map(node => ({ argument: node.data.label, is_rebuttal: false })) : [];
+    const subgraphEdges = selectedEdges ? selectedEdges.map(edge => ({
+      cause: edge.source, // エッジの source を cause にマッピング
+      effect: edge.target, // エッジの target を effect にマッピング
+      is_rebuttal: false
+    })) : [];
+    const dynamicSubgraph: DebateGraph = {
+          nodes: subgraphNodes,
+          edges: subgraphEdges,
+        };
     const enhanceTodoRequest: EnhanceTODORequest = {
       debate_graph: sampleDebateGraph,
-      subgraph: sampleSubgraph,
+      subgraph: dynamicSubgraph,
     };
 
     try {
@@ -97,11 +88,14 @@ export const TodoSuggest = () => {
           let content = '';
 
           if ('strengthen_edge' in item && item.strengthen_edge) {
-            content = `**エッジ強化**: 「${item.strengthen_edge.cause_argument}」から「${item.strengthen_edge.effect_argument}」へ (${item.strengthen_edge.enhancement_type}) - ${item.strengthen_edge.content}`;
+            // エッジ強化の場合、strengthen_edge.contentのみを content に設定
+            content = item.strengthen_edge.content;
           } else if ('strengthen_node' in item && item.strengthen_node) {
-            content = `**ノード強化**: 「${item.strengthen_node.target_argument}」 - ${item.strengthen_node.content}`;
+            // ノード強化の場合、strengthen_node.contentのみを content に設定
+            content = item.strengthen_node.content;
           } else if ('insert_node' in item && item.insert_node) {
-            content = `**ノード挿入**: 「${item.insert_node.cause_argument}」と「${item.insert_node.effect_argument}」の間に「${item.insert_node.intermediate_argument}」を挿入`;
+            // ノード挿入の場合、元のフォーマットを維持
+            content = `「${item.insert_node.cause_argument}」と「${item.insert_node.effect_argument}」の間に「${item.insert_node.intermediate_argument}」を挿入`;
           } else {
             content = '不明なTODOアクション'; // 予期しないケースのためのフォールバック
           }
@@ -124,12 +118,26 @@ export const TodoSuggest = () => {
 
   return (
     <Box sx={{ overflowY: 'auto', flexGrow: 1, backgroundColor: futuristicTheme.palette.background.paper, maxHeight: '100%'}}>
-      <Typography variant="h6" gutterBottom>
-        ToDoサジェスト
+      <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexGrow: 1,
+        backgroundColor: futuristicTheme.palette.background.paper,
+        maxHeight: '20%',
+        borderBottom: '1px solid',
+        borderColor: futuristicTheme.palette.primary.main
+        }}
+      >
+      <Typography variant="h6" gutterBottom sx={{ color: futuristicTheme.palette.text, ml: 2}} >
+        検証方法
       </Typography>
       <Button
         variant="contained"
         sx={{
+          mr: 2,
           mb: 2,
           background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
           '&:hover': {
@@ -138,10 +146,16 @@ export const TodoSuggest = () => {
         }}
         onClick={handleClick}
       >
-        ToDoサジェストを取得
+        検証プランを作成
       </Button>
-
-      {/* todoSuggestionsがある場合、各要素をPaperコンポーネントで表示 */}
+      </Box>
+      <Box sx={{
+            overflowY: 'auto',
+            flexGrow: 1,
+            backgroundColor: futuristicTheme.palette.background.paper,
+            maxHeight: '80%',
+            pt: 2
+            }}>
       {todoSuggestions.map((suggestion, index) => (
         <Paper
           key={index} // 各Paperにユニークなkeyを設定
@@ -177,6 +191,7 @@ export const TodoSuggest = () => {
           )}
         </Paper>
       ))}
+      </Box>
     </Box>
   );
 };
