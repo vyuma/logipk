@@ -6,8 +6,6 @@ import {
   Box,
   Grid,
   Tabs,
-  Tab,
-  Typography,
 } from '@mui/material';
 
 // 仮説・TODOサジェスト・フローチャートコンポーネントのインポート
@@ -17,6 +15,7 @@ import { FlowChart } from './components/flowchart';
 import { TodoSuggest } from './components/todo_suggest';
 import { HypothesisInput } from './components/hypothesis_import';
 import { StyledTab } from './components/styled_tab';
+import type { Edge, Node } from '@xyflow/react';
 
 
 function App() {
@@ -25,15 +24,19 @@ function App() {
   // 仮説/反論の切り替え状態をAppコンポーネントで管理
   const [activeInputType, setActiveInputType] = useState('hypothesis'); // 'hypothesis' または 'rebuttal'
 
+  const [selectedNodes, setSelectedNodes] = useState<Node[] | null>(null);
+  const [selectedEdges, setSelectedEdges] = useState<Edge[]|null>(null);
+
   // フローチャートタブの変更ハンドラ
-  const handleFlowchartChange = (event, newValue) => {
+  const handleFlowchartChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveFlowchartType(newValue);
   };
 
   // 仮説/反論タブの変更ハンドラ
-  const handleInputTypeChange = (event, newValue) => {
+  const handleInputTypeChange = (_event: React.SyntheticEvent, newValue: 'hypothesis' | 'rebuttal') => {
     setActiveInputType(newValue);
   };
+  
 
   return (
     <ThemeProvider theme={futuristicTheme}>
@@ -87,7 +90,12 @@ function App() {
               </Tabs>
               <Box sx={{ flexGrow: 1 }}>
                 {/* FlowChart コンポーネント */}
-                <FlowChart activeFlowchartType={activeFlowchartType} />
+                <FlowChart activeFlowchartType={activeFlowchartType} 
+                selectedEdges={selectedEdges}
+                selectedNodes={selectedNodes}
+                setSelectedEdges={setSelectedEdges}
+                setSelectedNodes={setSelectedNodes}
+                />
               </Box>
             </Box>
           </Grid>

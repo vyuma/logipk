@@ -14,7 +14,7 @@ import {
 import { useMemo, useCallback, useEffect } from 'react';
 
 import TextUpdaterNode from './Node/CustumNode';
-import TextSuggestNode from './Node/CustumNode_trans';
+import TextSuggestNode from './Node/CustumNode_suggest';
 import CustomEdge from './Edge/CustumEdges';
 
 export default function FlowInner({
@@ -26,6 +26,8 @@ nodes,
     onEdgesChange,
     getId,
     updateHistory,
+    setSelectedEdges,
+    setSelectedNodes,
   }: {
     nodes: Node[];
     setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
@@ -35,6 +37,8 @@ nodes,
     onEdgesChange: OnEdgesChange;
     getId: () => string;
     updateHistory: (nodes: Node[], edges: Edge[]) => void;
+    setSelectedEdges: (edges: Edge[]) => void;
+    setSelectedNodes: (nodes: Node[]) => void;
   }) {
     const reactFlow = useReactFlow<Node, Edge>();
     
@@ -53,7 +57,9 @@ nodes,
         textUpdater: (props: { id: string; data: { label: string }; }) => (
           <TextUpdaterNode {...props} onLabelChange={onLabelChange} />
         ),
-        textSuggest: TextSuggestNode,
+        textSuggest: (props: { id: string; data: { label: string }; }) => (
+            <TextSuggestNode {...props} onLabelChange={onLabelChange} />
+        ),
       }), [onLabelChange]);
   
     const edgeTypes = useMemo(() => ({
@@ -86,7 +92,7 @@ nodes,
         // ノード追加
         const newNode: Node = {
           id: getId(),
-          type: 'textUpdater',
+          type: 'textSugges', // デフォルトのノードタイプ
           position,
           data: { label: 'New Node' },
         };
@@ -102,6 +108,8 @@ nodes,
         pane.removeEventListener('dblclick', handleDblClick);
       };
     }, [reactFlow, setNodes, updateHistory, edges, getId]);
+
+
   
     return (
         <div className="w-full h-screen flex dark bg-gray-900">
@@ -121,6 +129,8 @@ nodes,
                 const selectedEdges = elements.edges.filter((e) => e.selected);
                 console.log('Selected Nodes:', selectedNodes);
                 console.log('Selected Edges:', selectedEdges);
+                setSelectedNodes(selectedNodes);
+                setSelectedEdges(selectedEdges);
             }}
             >
             <MiniMap
