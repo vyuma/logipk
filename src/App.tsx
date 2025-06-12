@@ -120,7 +120,12 @@ function App() {
 
             {/* 右側下半分 - ToDoサジェストコンポーネント */}
             <Box sx={{ flexGrow: 1, p: 2, bgcolor: 'background.paper', borderRadius: 3, height: '45%'}}>
-              <TodoSuggest />
+              <TodoSuggest 
+                selectedNodes={selectedNodes}
+                setSelectedNodes={setSelectedNodes}
+                selectedEdges={selectedEdges}
+                setSelectedEdges={setSelectedEdges}
+              />
             </Box>
           </Grid>
         </Grid>
