@@ -13,6 +13,8 @@ import {
   } from '@xyflow/react';
 import { useMemo, useCallback, useEffect, useRef} from 'react';
 
+import { Button } from '@mui/material';
+
 import TextUpdaterNode from './Node/CustumNode';
 import TextSuggestNode from './Node/CustumNode_suggest';
 import CustomEdge from './Edge/CustumEdges';
@@ -224,12 +226,22 @@ export default function FlowInner({
     >
         
       <div style={{ width: '100%', height: '100%' }}>
-      <button
-        className=" ml-5 mt-5 bg-blue-600 text-white px-4 py-2 rounded shadow-md hover:bg-blue-700 transition-colors "
-        onClick={doubleClickHandler}
+      <Button
+          variant="contained"
+          sx={{
+            mr: 5,
+            mb: 5,
+            background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+            '&:hover': {
+              backgroundColor: '#1e40af',
+            },
+          
+          }}
+          onClick={doubleClickHandler}
         >
-        AIサジェスト
-        </button>
+          AIサジェスト
+        </Button>
+
         <ReactFlow
           nodes={nodes}
           edges={edges}

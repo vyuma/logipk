@@ -56,35 +56,53 @@ export default function CustomEdge({
 
   return (
     <>
-      <BaseEdge
-        id={id}
-        path={edgePath}
-        style={{
-          stroke: selected ? "#3b82f6" : "#64748b", // 選択時は青、通常はグレー
-          strokeWidth: selected ? 3 : 2,
-          filter: selected ? "drop-shadow(0 0 6px #3b82f6)" : "none", // 青い光
-          transition: "all 0.2s",
-        }}
-      />
-      <EdgeLabelRenderer>
-        <form>
-          <textarea
-            style={{
-              position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-              pointerEvents: 'all',
-              textAlign: 'center',
-              resize: 'none',
-              overflow: 'hidden',
-            }}
-            className="nodrag nopan bg-gray-900 border border-gray-700 text-gray-100 rounded-md p-1 shadow-md"
-            placeholder=""
-            ref={taRef}
-            onChange={handleChange}
-            value={data?.label}
-          />
-        </form>
-      </EdgeLabelRenderer>
-    </>
+  <BaseEdge
+    id={id}
+    path={edgePath}
+    style={{
+      stroke: selected ? '#3b82f6' : '#64748b',
+      strokeWidth: selected ? 3 : 2,
+      filter: selected ? 'drop-shadow(0 0 6px #3b82f6)' : 'none',
+      transition: 'all 0.2s',
+    }}
+  />
+
+  {/* ---- ラベル部分 ---- */}
+  <EdgeLabelRenderer>
+    {(
+      /* ★ ラベルが空でも「選択中」なら編集 UI を表示する */
+      selected || (data?.label?.trim() ?? '').length > 0
+    ) && (
+      <form>
+        <textarea
+          ref={taRef}
+          value={data?.label}
+          onChange={handleChange}
+          placeholder={selected && !(data?.label ?? '').trim() ? 'ラベルを入力…' : ''}
+          /* ★ 座標計算は従来のまま */
+          style={{
+            position: 'absolute',
+            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+            pointerEvents: 'all',
+            textAlign: 'center',
+            resize: 'none',
+            overflow: 'hidden',
+            minWidth: data?.label ? '4rem' : '0', // 空欄時は極小化
+            transition: 'all 0.15s',
+          }}
+          /* ★ Tailwind で「中身あり／なし」をスッと切り替え */
+          className={`nodrag nopan rounded-md ${
+            (data?.label ?? '').trim()
+              ? // ── 入力あり：従来の暗色カード風 ──
+                'bg-gray-900 border border-gray-700 text-gray-100 shadow-md p-1'
+              : // ── 入力なし：完全に透明 ──
+                'bg-transparent border-none text-transparent p-0'
+          }`}
+        />
+      </form>
+    )}
+  </EdgeLabelRenderer>
+</>
+
   );
 }
