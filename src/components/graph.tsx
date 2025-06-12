@@ -1,22 +1,17 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   useNodesState,
   useEdgesState,
-  addEdge,
   ReactFlowProvider,
   type Node,
   type Edge,
-  type Connection,
   type OnNodesChange,
   type OnEdgesChange,
 } from '@xyflow/react';
-import { useReactFlow } from '@xyflow/react';
+
 
 import '@xyflow/react/dist/style.css';
 
-import TextUpdaterNode from './Node/CustumNode';
-import TextSuggestNode from './Node/CustumNode_trans';
-import CustomEdge from './Edge/CustumEdges';
 import FlowInner from './FlowInner';
 
 const initialNodes: Node[] = [

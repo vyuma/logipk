@@ -1,5 +1,4 @@
 
-import React from "react";
 import Flow from "./components/graph";
 
 export default function App() {

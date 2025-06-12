@@ -3,7 +3,7 @@ import { Handle, Position } from '@xyflow/react';
 
 const handleStyle = { left: 10 };
 
-function TextUpdaterNode() {
+function TextUpdaterNode({data}: {data: {label: string}}) {
   /** textarea への参照 */
   const taRef = useRef<HTMLTextAreaElement>(null);
 
@@ -26,7 +26,7 @@ function TextUpdaterNode() {
         ref={taRef}
         className="nodrag mt-1 w-full resize-none overflow-hidden rounded-md border border-gray-300 p-2 text-sm focus:outline-none"
         placeholder="Type here..."
-        value={"例: こんにちは、世界！"} // ← 初期値を設定
+        value={data.label} // ← 初期値を設定
         rows={1}                     // ← 最低 1 行
         onChange={autoResize}        // ← 高さ調整
       />

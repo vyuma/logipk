@@ -13,7 +13,7 @@ import {
     type OnEdgesChange,
   } from '@xyflow/react';
   import { useMemo, useCallback } from 'react';
-  
+
   import TextUpdaterNode from './Node/CustumNode';
   import TextSuggestNode from './Node/CustumNode_trans';
   import CustomEdge from './Edge/CustumEdges';
@@ -74,6 +74,7 @@ import {
       },
       [reactFlow, setNodes, updateHistory, edges, getId]
     );
+
   
     return (
       <div className="w-full h-screen flex">
@@ -88,6 +89,12 @@ import {
             edgeTypes={edgeTypes}
             onNodeDoubleClick={onPaneDoubleClick}
             onPaneClick={onPaneDoubleClick}
+            onSelectionChange={(elements) => {
+                const selectedNodes = elements.nodes.filter((n) => n.selected);
+                const selectedEdges = elements.edges.filter((e) => e.selected);
+                console.log('Selected Nodes:', selectedNodes);
+                console.log('Selected Edges:', selectedEdges);
+              }}
             fitView
           >
             <MiniMap />
