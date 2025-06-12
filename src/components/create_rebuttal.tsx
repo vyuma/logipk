@@ -161,21 +161,36 @@ export const CreateRebuttalComponent = ({ selectedNodes, selectedEdges }: Rebutt
         <Box>
           {rebuttalResults.map((rebuttal, index) => (
             <Paper
-              key={index}
-              elevation={2}
-              sx={{
-                p: 2,
-                mb: 2,
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: 'none',
-                outline: 'none',
-                '&:hover': {
-                  opacity: 0.8,
-                  backgroundColor: 'white',
-                }
-              }}
-            >
+            key={index}
+            elevation={2}
+            sx={{
+              p: 2,
+              mb: 2,
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: 'none',
+              outline: 'none',
+              '&:hover': {
+                opacity: 0.8,
+                backgroundColor: futuristicTheme.palette.primary.light
+              },
+              // ここから追加・変更
+              opacity: 0, // 最初は非表示
+              transform: 'translateY(20px)', // 下から20pxの位置に設定
+              animation: `slideIn 0.5s forwards ease-out ${index * 0.5}s`, // アニメーションを適用
+              '@keyframes slideIn': {
+                  'from': {
+                      opacity: 0,
+                      transform: 'translateY(20px)',
+                  },
+                  'to': {
+                      opacity: 1,
+                      transform: 'translateY(0)',
+                  },
+              },
+              // ここまで追加・変更
+            }}
+          >
               <Typography variant="body1" color='black'>
                 {rebuttal}
               </Typography>
