@@ -18,17 +18,6 @@ import mockData from './mock.json';
 import { EnhanceLogic } from '../api/enhanceLogic';
 
 
-// const initialNodes: Node[] = [
-//   { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-//   { id: '2', position: { x: 0, y: 150.4 }, data: { label: '2' } },
-//   { id: '3', position: { x: 0, y: 200 }, data: { label: '3' }, type: 'textUpdater' },
-//   { id: '4', position: { x: 0, y: 300 }, data: { label: '4' }, type: 'textSuggest' },
-// ];
-
-// const initialEdges: Edge[] = [
-//   { id: 'e1-2', source: '1', target: '2' },
-//   { id: 'e2-3', source: '2', target: '3', type: 'custom-edge' },
-// ];
 
 const addNodeType = (initialNodes:Node[]) => {
   return initialNodes.map(node => {
@@ -177,6 +166,7 @@ export default function Flow({activeFlowchartType, selectedNodes  ,selectedEdges
           target: idMap[e.target] ?? e.target,
           data: { label: e.label },
           type: 'custom-edge',
+          animated: true,
         }));
   
         return [...nextEdges, ...edgesToAdd];

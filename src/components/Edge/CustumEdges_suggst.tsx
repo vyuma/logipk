@@ -56,35 +56,56 @@ export default function CustomEdge({
 
   return (
     <>
-      <BaseEdge
-        id={id}
-        path={edgePath}
-        style={{
-          stroke: selected ? "#3b82f6" : "#64748b", // 選択時は青、通常はグレー
-          strokeWidth: selected ? 3 : 2,
-          filter: selected ? "drop-shadow(0 0 6px #3b82f6)" : "none", // 青い光
-          transition: "all 0.2s",
-        }}
-      />
-      <EdgeLabelRenderer>
-        <form>
-          <textarea
-            style={{
-              position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-              pointerEvents: 'all',
-              textAlign: 'center',
-              resize: 'none',
-              overflow: 'hidden',
-            }}
-            className="nodrag nopan bg-gray-900 border border-gray-700 text-gray-100 rounded-md p-1 shadow-md"
-            placeholder="Type here..."
-            ref={taRef}
-            onChange={handleChange}
-            value={data?.label}
-          />
-        </form>
-      </EdgeLabelRenderer>
-    </>
+  {/* ── 1. エッジ本線：ライトグリーン破線＋グロー ── */}
+  <BaseEdge
+    id={id}
+    path={edgePath}
+    style={{
+      stroke: selected ? '#34d399' : '#6ee7b7',        // 濃エメラルド ↔ ライトライム
+      strokeWidth: selected ? 4 : 3,
+      strokeDasharray: '6 3',
+      filter: selected
+        ? 'drop-shadow(0 0 8px #34d399)'              // 強めグロー
+        : 'drop-shadow(0 0 4px #86efac)',
+      transition: 'all 0.2s',
+    }}
+  />
+
+  {/* ── 2. ラベル ── */}
+  <EdgeLabelRenderer>
+    {(selected || (data?.label?.trim() ?? '').length > 0) && (
+      <form>
+        <textarea
+          ref={taRef}
+          value={data?.label}
+          onChange={handleChange}
+          placeholder="サジェストを入力…"
+          style={{
+            position: 'absolute',
+            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+            pointerEvents: 'all',
+            textAlign: 'center',
+            resize: 'none',
+            overflow: 'hidden',
+            minWidth: data?.label ? '5rem' : '0',
+          }}
+          className={`
+            nodrag nopan rounded-md font-semibold tracking-wide
+            ${
+              (data?.label ?? '').trim()
+                ? /* 入力あり：エメラルド〜ライムのグラデ＋パルス */
+                  'bg-gradient-to-r from-emerald-500 via-lime-500 to-lime-400 \
+                   border-2 border-emerald-300 text-white shadow-lg animate-pulse'
+                : /* 入力なし：完全透過 */
+                  'bg-transparent border-none text-transparent'
+            }
+          `}
+        />
+      </form>
+    )}
+  </EdgeLabelRenderer>
+</>
+
+
   );
 }
