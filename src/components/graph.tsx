@@ -51,7 +51,7 @@ const addEdgeType = (initialEdges:Edge[]) => {
 const initialNodes = addNodeType(mockData.nodes);
 const initialEdges = addEdgeType(mockData.edges);
 
-export default function Flow({activeFlowchartType , selectedNodes ,selectedEdges, setSelectedNodes,setSelectedEdges,} :{
+export default function Flow({activeFlowchartType, selectedNodes  ,selectedEdges,setSelectedNodes ,setSelectedEdges, } :{
   activeFlowchartType?: string;
   selectedNodes: Node[] | null;
   selectedEdges: Edge[] | null;
@@ -212,9 +212,11 @@ export default function Flow({activeFlowchartType , selectedNodes ,selectedEdges
         getId={getId}
         updateHistory={(nodes, edges) => setHistory((h) => [...h, { nodes, edges }])}
         selectedEdges={selectedEdges}
-        setSelectedNodes={setSelectedNodes}
         setSelectedEdges={setSelectedEdges}
+        selectedNodes={selectedNodes}
+        setSelectedNodes={setSelectedNodes}
         selectEnhanceLogic={selectEnhanceLogic}
+
       />
     </ReactFlowProvider>
   );

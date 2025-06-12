@@ -11,7 +11,7 @@ import {
     type OnNodesChange,
     type OnEdgesChange,
   } from '@xyflow/react';
-import { useMemo, useCallback, useEffect, useRef } from 'react';
+import { useMemo, useCallback, useEffect, useRef} from 'react';
 
 import TextUpdaterNode from './Node/CustumNode';
 import TextSuggestNode from './Node/CustumNode_suggest';
@@ -28,6 +28,7 @@ interface FlowInnerProps {
   updateHistory: (nodes: Node[], edges: Edge[]) => void;
   selectedEdges: Edge[] | null;
   setSelectedEdges: (edges: Edge[]) => void;
+  selectedNodes: Node[] | null;
   setSelectedNodes: (nodes: Node[]) => void;
   selectEnhanceLogic?: (nodes: Node[], edges: Edge[], selectedEdges:Edge[]) => void;
 }
@@ -43,6 +44,7 @@ export default function FlowInner({
   updateHistory,
   selectedEdges,
   setSelectedEdges,
+  selectedNodes,
   setSelectedNodes,
   selectEnhanceLogic
 }: FlowInnerProps) {
@@ -184,11 +186,10 @@ export default function FlowInner({
         }
         
     }
-        
-
 
   return (
-    <div className="w-full h-screen flex dark bg-gray-900">
+    <div className="w-full h-screen flex dark bg-gray-900"
+    >
       <div style={{ width: '100%', height: '100%' }}>
         <ReactFlow
           nodes={nodes}

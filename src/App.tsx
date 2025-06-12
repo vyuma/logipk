@@ -31,6 +31,8 @@ function App() {
   };
 
 
+
+
   return (
     <ThemeProvider theme={futuristicTheme}>
       <CssBaseline /> {/* MUIのCSSリセット */}
