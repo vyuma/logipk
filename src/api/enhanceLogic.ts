@@ -75,7 +75,6 @@ interface EnrichedInsertNodePayload extends InsertNodePayload {
  * フロントエンドで最終的に利用する、リッチ化されたアクションの型
  */
 export interface FinalEnhancementAction {
-  strengthen_node_uniqueness?: StrengthenNodeUniquenessPayload;
   strengthen_edge?: StrengthenEdgePayload;
   insert_node?: EnrichedInsertNodePayload;
 }

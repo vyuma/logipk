@@ -1,35 +1,54 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   useNodesState,
   useEdgesState,
-  addEdge,
   ReactFlowProvider,
   type Node,
   type Edge,
-  type Connection,
   type OnNodesChange,
   type OnEdgesChange,
 } from '@xyflow/react';
-import { useReactFlow } from '@xyflow/react';
+
 
 import '@xyflow/react/dist/style.css';
 
-import TextUpdaterNode from './Node/CustumNode';
-import TextSuggestNode from './Node/CustumNode_trans';
-import CustomEdge from './Edge/CustumEdges';
 import FlowInner from './FlowInner';
 
-const initialNodes: Node[] = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-  { id: '2', position: { x: 0, y: 150.4 }, data: { label: '2' } },
-  { id: '3', position: { x: 0, y: 200 }, data: { label: '3' }, type: 'textUpdater' },
-  { id: '4', position: { x: 0, y: 300 }, data: { label: '4' }, type: 'textSuggest' },
-];
+import mockData from './mock.json';
 
-const initialEdges: Edge[] = [
-  { id: 'e1-2', source: '1', target: '2' },
-  { id: 'e2-3', source: '2', target: '3', type: 'custom-edge' },
-];
+
+
+// const initialNodes: Node[] = [
+//   { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
+//   { id: '2', position: { x: 0, y: 150.4 }, data: { label: '2' } },
+//   { id: '3', position: { x: 0, y: 200 }, data: { label: '3' }, type: 'textUpdater' },
+//   { id: '4', position: { x: 0, y: 300 }, data: { label: '4' }, type: 'textSuggest' },
+// ];
+
+// const initialEdges: Edge[] = [
+//   { id: 'e1-2', source: '1', target: '2' },
+//   { id: 'e2-3', source: '2', target: '3', type: 'custom-edge' },
+// ];
+
+const addNodeType = (initialNodes:Node[]) => {
+  return initialNodes.map(node => {
+    if (!node.type) {
+      return { ...node, type: 'textUpdater' }; // デフォルトのノードタイプを設定
+    }
+    return node;
+  });
+}
+const addEdgeType = (initialEdges:Edge[]) => {
+  return initialEdges.map(edge => {
+    if (!edge.type) {
+      return { ...edge, data:{label:edge.label} ,type: 'custom-edge' }; // デフォルトのエッジタイプを設定
+    }
+    return edge;
+  });
+}
+
+const initialNodes = addNodeType(mockData.nodes);
+const initialEdges = addEdgeType(mockData.edges);
 
 export default function Flow() {
   const [nodes, setNodes, onNodesChangeOriginal] = useNodesState(initialNodes);
