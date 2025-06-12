@@ -17,7 +17,6 @@ import FlowInner from './FlowInner';
 import mockData from './mock.json';
 import { EnhanceLogic } from '../api/enhanceLogic';
 import type { DebateNode , DebateEdge } from '../api/enhanceLogic';
-import { select } from 'd3-selection';
 
 
 // const initialNodes: Node[] = [
@@ -66,6 +65,9 @@ export default function Flow({activeFlowchartType , selectedNodes ,selectedEdges
 
   const [nodes, setNodes, onNodesChangeOriginal] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChangeOriginal] = useEdgesState(initialEdges);
+  // 最初にローカルストレージにデータを保存する。
+  localStorage.setItem('nodes', JSON.stringify(initialNodes));
+  localStorage.setItem('edges', JSON.stringify(initialEdges));
 
   const [history, setHistory] = useState<{ nodes: Node[]; edges: Edge[] }[]>([
     { nodes: initialNodes, edges: initialEdges },
@@ -106,6 +108,7 @@ export default function Flow({activeFlowchartType , selectedNodes ,selectedEdges
         updateHistory(updatedNodes, edges);
         return updatedNodes;
       });
+      localStorage.setItem('nodes', JSON.stringify(nodes));
     },
     [edges],
   );
@@ -118,6 +121,7 @@ export default function Flow({activeFlowchartType , selectedNodes ,selectedEdges
         updateHistory(nodes, updatedEdges);
         return updatedEdges;
       });
+      localStorage.setItem('edges', JSON.stringify(edges));
     },
     [nodes],
   );
