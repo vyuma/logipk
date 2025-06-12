@@ -1,117 +1,45 @@
 import React from 'react';
-
-// 仮説入力コンポーネント
-// AppコンポーネントからactiveInputTypeを受け取るように変更
-
-interface HypothesisInputProps {
-  activeInputType: string;
-}
-
-import { TextField, Stack, Box, Button } from '@mui/material';        // レイアウト用にBoxをインポート
+import { Box, Typography, Paper } from '@mui/material';
 import { futuristicTheme } from '../theme';
 
-// プロップスの型定義
-interface HypothesisInputProps {
-  activeInputType: string;
-}
+// 仮説入力コンポーネント（現在は予想質問の表示に特化）
+export const HypothesisInput: React.FC = () => {
+  // 予想される質問のダミーデータ
+  const predictedQuestions = [
+    "この仮説の根拠は何ですか？",
+    "どのようなデータでこの仮説を検証しますか？",
+    "この仮説が間違っていた場合、どのような影響がありますか？",
+    "競合する仮説はありますか？",
+    "この仮説の新規性は何ですか？"
+  ];
 
-// 仮説入力コンポーネント
-export const HypothesisInput: React.FC<HypothesisInputProps> = ({ activeInputType }) => {
   return (
-    // Boxコンポーネントを最上位のコンテナとして使用し、Flexboxのスタイルを適用
-    <Box className="p-4 bg-white rounded-lg shadow-md h-full flex flex-col">
-      {/* コンテンツエリア */}
-      {activeInputType === 'hypothesis' ? (
-        <>
-        <Stack spacing={4} sx={{ height: '100%' }}>
-            <TextField
-            multiline
-            minRows={5}
-            fullWidth
-            variant="outlined"
-            placeholder="ここに仮説を入力してください..."
-            className="mb-4"
-            sx={{
-                '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                    borderColor: 'gray',
-                },
-                '&:hover fieldset': {
-                    borderColor: futuristicTheme.palette.secondary.light,
-                },
-                '&.Mui-focused fieldset': {
-                    borderColor: futuristicTheme.palette.secondary.main,
-                },
-                },
-            }}
-            />
-            <Button
-            variant="contained"
-            // color="primary"
-            // className="mt-auto" // Tailwindのmargin-top-autoを維持
-            sx={{
-                // カスタムスタイルを適用 (近未来的なグラデーションやシャドウ)
-                background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-                borderRadius: 3,
-                borderColor: 'black',
-                height: '5vh',
-                padding: '1',
-                color: 'white',
-                '&:hover': {
-                opacity: 0.9,
-                },
-            }}
-            >
-            仮説を検証
-            </Button>
-        </Stack>
-        </>
-      ) : (
-        <>
-          <TextField
-            multiline
-            minRows={8}
-            fullWidth
-            variant="outlined"
-            placeholder="ここに予想される質問や反論が表示されます..."
-            className="mb-4"
-            readOnly
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'gray',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#2563eb',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#1d4ed8',
-                },
-              },
-            }}
-          />
-          {/* <Button
-            variant="contained"
-            color="secondary" // セカンダリーカラー（通常は紫系）
-            className="mt-auto"
-            sx={{
-              // カスタムスタイルを適用
-              background: 'linear-gradient(45deg, #9C27B0 30%, #E040FB 90%)',
-              boxShadow: '0 3px 5px 2px rgba(224, 64, 251, .3)',
-              borderRadius: 3,
-              height: 48,
-              padding: '0 30px',
-              color: 'white',
-              '&:hover': {
-                opacity: 0.9,
-              },
-            }}
-          >
-            質問を生成
-          </Button> */}
-        </>
-      )}
+    <Box sx={{ overflowY: 'auto', flexGrow: 1}}>
+    <Typography variant="h6" gutterBottom>
+        予想される質問
+    </Typography>
+    {predictedQuestions.map((question, index) => (
+        <Paper
+          key={index}
+          elevation={2}
+          sx={{
+            p: 2,
+            mb: 2,
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'none', // ホバー時の影をなくす場合
+            outline: 'none',
+            '&:hover': {
+              opacity: 0.8,
+              background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+            }
+          }}
+        >
+          <Typography variant="body1" color='black'>
+            {question}
+          </Typography>
+        </Paper>
+    ))}
     </Box>
   );
 };

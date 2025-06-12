@@ -7,15 +7,15 @@ export const futuristicTheme = createTheme({
   palette: {
     mode: 'dark', // ダークモードを基調とする
     primary: {
-      main: '#00e676', // 明るいグリーン (アクセントカラー)
+      main: '#00A786', // 明るいグリーン (アクセントカラー)
     },
     secondary: {
       main: '#2563eb', // 青 (サブアクセント)
       light: '#60a5fa', // より明るい青
     },
     background: {
-      default: '#0A1929', // 非常に濃い青 (全体の背景)
-      paper: '#1A2027', // やや明るい濃いグレー (カードやコンポーネントの背景)
+      default: '#000000', // 非常に濃い青 (全体の背景)
+      paper: '#00043A', // やや明るい濃いグレー (カードやコンポーネントの背景)
     },
     text: {
       primary: '#E0E0E0', // 明るいグレー (主要なテキスト)
