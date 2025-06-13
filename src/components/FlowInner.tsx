@@ -160,7 +160,7 @@ export default function FlowInner({
       // ノード追加（typoを修正: 'textSugges' → 'textSuggest'）
       const newNode: Node = {
         id: getId(),
-        type: 'textSuggest', // typoを修正
+        type: 'textUpdater', // typoを修正
         position,
         data: { label: 'New Node' },
       };
