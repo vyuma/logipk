@@ -226,21 +226,7 @@ export default function FlowInner({
     >
         
       <div style={{ width: '100%', height: '100%' }}>
-      <Button
-          variant="contained"
-          sx={{
-            mr: 5,
-            mb: 5,
-            background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-            '&:hover': {
-              backgroundColor: '#1e40af',
-            },
-          
-          }}
-          onClick={doubleClickHandler}
-        >
-          AIサジェスト
-        </Button>
+      
 
         <ReactFlow
           nodes={nodes}
@@ -266,7 +252,21 @@ export default function FlowInner({
             color="#334155"
           />
         </ReactFlow>
-        
+        <Button
+          variant="contained"
+          sx={{
+            mr: 5,
+            mb: 5,
+            background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+            '&:hover': {
+              backgroundColor: '#1e40af',
+            },
+          
+          }}
+          onClick={doubleClickHandler}
+        >
+          AIサジェスト
+        </Button>
       </div>
       
     </div>
