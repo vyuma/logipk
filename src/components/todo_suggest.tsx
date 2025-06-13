@@ -1,5 +1,5 @@
 import { futuristicTheme } from "../theme";
-import { Box, Typography, Paper, Button } from "@mui/material";
+import { Box, Typography, Paper, Button, CircularProgress } from "@mui/material"; // ★CircularProgressを追加★
 import type { DebateGraph, EnhanceTODORequest, TODOSuggestions, EnhancementTODO } from "../interface";
 import { AutoDebaterApiClient } from "../api/enhaneToDo";
 import { useState } from 'react';
@@ -24,6 +24,8 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
       isOpen: boolean;
     }>
   >([]);
+  // ローディング状態を保持する新しいstate
+  const [isLoading, setIsLoading] = useState(false);
 
   // TODOアイテムの展開/折りたたみ状態を切り替える関数
   const handleToggle = (index: number) => {
@@ -108,8 +110,13 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
     }
   }
 
-  const handleClick = () => {
-    demonstrateEnhanceTodo();
+  const handleClick = async () => {
+    setIsLoading(true);
+    try {
+      await demonstrateEnhanceTodo();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -141,8 +148,9 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
           },
         }}
         onClick={handleClick}
+        disabled={isLoading}
       >
-        検証プランを作成
+        {isLoading ? '検証プランを作成中...' : '検証プランを作成'}
       </Button>
       </Box>
       <Box sx={{
@@ -152,7 +160,12 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
             maxHeight: '80%',
             pt: 2
             }}>
-      {todoSuggestions.map((suggestion, index) => (
+      {isLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+          <CircularProgress sx={{ color: futuristicTheme.palette.text.primary }} /> {/* ★グルグル表示★ */}
+        </Box>
+      )}
+      {!isLoading && todoSuggestions.map((suggestion, index) => (
         <Paper
           key={index}
           elevation={2}
@@ -167,10 +180,9 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
               opacity: 0.8,
               backgroundColor: futuristicTheme.palette.primary.light
             },
-            // ここから追加・変更
-            opacity: 0, // 最初は非表示
-            transform: 'translateY(20px)', // 下から20pxの位置に設定
-            animation: `slideIn 0.5s forwards ease-out ${index * 0.5}s`, // アニメーションを適用
+            opacity: 0,
+            transform: 'translateY(20px)',
+            animation: `slideIn 0.5s forwards ease-out ${index * 0.5}s`,
             '@keyframes slideIn': {
                 'from': {
                     opacity: 0,
@@ -181,7 +193,6 @@ export const TodoSuggest  = ({ selectedNodes, selectedEdges }: SuggestInputProps
                     transform: 'translateY(0)',
                 },
             },
-            // ここまで追加・変更
           }}
         >
           <Typography
